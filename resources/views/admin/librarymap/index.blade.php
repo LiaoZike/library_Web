@@ -20,8 +20,8 @@
             <button type="button" id="addFloor">+ 新增欄位</button>
             <button type="button" id="checkFloor" onclick="return showCustomConfirm()">v 儲存送出</button>
                     <div class="container-fluid" id="floorFields">
-                        <div class="row">
-                            <div class="col-12 col-sm-3">排序</div>
+                        <div class="row floortitle">
+                            <div class="col-12 col-sm-2">排序</div>
                             <div class="col-12 col-sm-3">樓層代碼</div>
                             <div class="col-12 col-sm-3">備註</div>
                         </div>
@@ -30,6 +30,7 @@
                         @foreach($floors as $floor)
 
                             <div class="row flooritem">
+                                <div style="display:none"><input type="text" name="id[]" value="{{$floor->id}}" min="1" readonly tabindex="-1"></div>
                                 <div class="col-12 col-sm-2 readonly"><input type="text" name="ord[]" value="{{$floor->ord}}" min="1" readonly tabindex="-1"></div>
                                 <div class="col-12 col-sm-3"><input type="text" name="name[]"  placeholder="樓層" value="{{$floor->name}}"></div>
                                 <div class="col-12 col-sm-3"><input type="text" name="note[]" placeholder="備註" value="{{$floor->note}}"></div>
@@ -52,6 +53,9 @@
     </div>
     <style>
 
+        .bck_orange{
+            background-color: orange;
+        }
         #floorFields{
             text-align: center;
         }
@@ -235,8 +239,9 @@
         $('#addFloor').click(function() {
             // 新增一組輸入欄位
             var newField = $(
-                '<div class="row flooritem">'+
-                    '<div class="col-12 col-sm-2 readonly"><input type="text" name="ord[]" value="0" min="1" readonly tabindex="-1"><\/div>'+
+                '<div class="row flooritem bck_orange">'+
+                '<div style="display:none"><input type="text" name="id[]" value="-1" min="1" readonly tabindex="-1"><\/div>'+
+                '<div class="col-12 col-sm-2 readonly"><input type="text" name="ord[]" value="0" min="1" readonly tabindex="-1"><\/div>'+
                     '<div class="col-12 col-sm-3"><input type="text" name="name[]"  placeholder="樓層"><\/div>'+
                     '<div class="col-12 col-sm-3"><input type="text" name="note[]" placeholder="備註"><\/div>'+
                     '<div class="col-12 col-sm-2"><button type="button" class="remove-floor">刪除</button><\/div>'+
@@ -261,6 +266,9 @@
         });
 
         function flash_move(){
+            $('.move-up').off();
+            $('.move-down').off();
+
             // 上移按鈕點擊事件
             $('.move-up').click(function() {
                 var row = $(this).closest('.flooritem');
