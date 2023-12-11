@@ -19,11 +19,12 @@
 
             <button type="button" id="addFloor">+ 新增欄位</button>
             <button type="button" id="checkFloor" onclick="return showCustomConfirm()">v 儲存送出</button>
-                    <div class="container-fluid" id="floorFields">
+                    <div class="container-fluid mt-3" id="floorFields">
                         <div class="row floortitle">
                             <div class="col-12 col-sm-2">排序</div>
                             <div class="col-12 col-sm-3">樓層代碼</div>
                             <div class="col-12 col-sm-3">備註</div>
+                            <div class="col-12 col-sm-4">功能鍵</div>
                         </div>
                         <div class="row flooritems">
                         <!-- 初始的一組輸入欄位 -->
@@ -59,6 +60,10 @@
         #floorFields{
             text-align: center;
         }
+        .floortitle{
+            background-color: #555;
+            color:white;
+        }
         .flooritem{
             padding-top: 2px;
             padding-bottom: 2px;
@@ -92,7 +97,7 @@
             cursor: pointer;
         }
         .flooritem:hover{
-            background-color: #f5a30e;
+            background-color: #ffd180 !important;
             transition: background-color .2s;
         }
         .remove-floor:hover {

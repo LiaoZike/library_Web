@@ -21,6 +21,8 @@
     <style>
         .title{
             text-align: center;
+            background-color: #555;
+            color:white;
         }
         .floor:nth-child(2){
             border-top: 1px solid black;
