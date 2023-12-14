@@ -18,6 +18,7 @@ class LibraryMapController extends Controller{
             ->title('空的')
             ->description('Description...');
     }
+
     public function floor(Content $content){ //顯示編輯樓層頁面
         (new \Encore\Admin\Admin)->disablePjax();
         //$floors=Floor::all();
