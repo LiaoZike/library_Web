@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Admin\Controllers;
+use Encore\Admin\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Floor;
@@ -18,6 +19,7 @@ class LibraryMapController extends Controller{
             ->description('Description...');
     }
     public function floor(Content $content){ //顯示編輯樓層頁面
+        (new \Encore\Admin\Admin)->disablePjax();
         //$floors=Floor::all();
         $floors = Floor::orderBy('ord','desc')->get();
 
@@ -88,6 +90,7 @@ class LibraryMapController extends Controller{
     }
 
     public function editmap($floorid,Content $content){//編輯樓層地圖資訊
+        (new \Encore\Admin\Admin)->disablePjax();
         $id=$floorid;
         $floors=Floor::orderBy('ord','desc')->get();
         $floormaps=FloorMap::where('linkid','=',$floorid)->get();

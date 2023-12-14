@@ -25,7 +25,7 @@
 
 	if (typeof window === "undefined" || !window.document) {
 		return function kvsortableError() {
-			throw new Error("KvSortable.js requires a window with a document");
+			throw new Error("KvSortable.librarymap requires a window with a document");
 		};
 	}
 
