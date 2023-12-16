@@ -18,9 +18,32 @@ class LibraryMapController extends Controller{
             ->title('空的')
             ->description('Description...');
     }
-
-    public function floor(Content $content){ //顯示編輯樓層頁面
-        (new \Encore\Admin\Admin)->disablePjax();
+    /************************************/
+    /*********  圖書館樓層顯示/處理  ********/
+    /************************************/
+    public function floor(Content $content){//顯示樓層頁面
+        $floors=Floor::orderBy('ord','desc')->get();
+        if (!empty($floors)) {
+            for ($i = 0; $i < sizeof($floors); $i++) {
+                $floorcount=FloorMap::where('linkid','=',$floors[$i]->id)->get();
+                if (empty($floors)) {
+                    $floors[$i]->count=0;
+                }else{
+                    $floors[$i]->count=count($floorcount);
+                }
+            }
+        }
+        $data=[
+            'floors'=>$floors,
+        ];
+        return $content
+            ->title('平面圖編輯')
+            ->description('樓層設定與檢視，點選樓層可顯示該樓層書櫃平面圖')
+            ->view("admin.librarymap.index",$data);
+    }
+    //顯示編輯樓層頁面
+    public function flooredit(Content $content){
+            (new \Encore\Admin\Admin)->disablePjax();
         $floors = Floor::orderBy('ord','desc')->get();
 
         if (!empty($floors)) {
@@ -40,9 +63,10 @@ class LibraryMapController extends Controller{
         return $content
             ->title('樓層編輯')
             ->description('新增/修改/刪除圖書館樓層...')
-            ->view("admin.librarymap.index",$data);
+            ->view("admin.librarymap.show",$data);
     }
-    public function floorSave(Request $request){//編輯樓層資訊
+    //儲存編輯樓層
+    public function flooreditsave(Request $request){
         $db_floors=Floor::all();
         $ids = [];
         foreach ($db_floors as $floor) {
@@ -90,38 +114,65 @@ class LibraryMapController extends Controller{
             }
         }
         admin_toastr('儲存成功', 'success');
-        return redirect()->route("admin.librarymap.floor");
+        return redirect()->route("admin.librarymap.flooredit");
     }
 
-    public function map(Content $content){//顯示樓層頁面
-        $floors=Floor::orderBy('ord','desc')->get();
-        if (!empty($floors)) {
-            for ($i = 0; $i < sizeof($floors); $i++) {
-                $floorcount=FloorMap::where('linkid','=',$floors[$i]->id)->get();
-                if (empty($floors)) {
-                    $floors[$i]->count=0;
-                }else{
-                    $floors[$i]->count=count($floorcount);
-                }
-            }
-        }
-        $data=[
-            'floors'=>$floors,
-        ];
-        return $content
-            ->title('平面圖編輯')
-            ->description('樓層設定與檢視，點選樓層可顯示該樓層書櫃平面圖')
-            ->view("admin.librarymap.show",$data);
-    }
 
-    public function editmap($floorid,Content $content){//顯示編輯樓層書櫃頁面
-        (new \Encore\Admin\Admin)->disablePjax();
+
+    /************************************/
+    /***********  地圖顯示/處理  **********/
+    /************************************/
+    //顯示樓層書櫃頁面
+    public function floormap($floorid,Content $content){
         $id=$floorid;
         $checks=Floor::find($floorid);
         if($checks==null){
             abort(404);
         }
         $floors=Floor::orderBy('ord','desc')->get();
+
+        if(!empty($floors)){ //計算櫃數
+            for($i=0;$i<sizeof($floors);$i++){
+                $maps=FloorMap::where('linkid','=',$floors[$i]->id)->get();
+                if(!empty($maps)) {
+                    $floors[$i]->sizeofobj=count($maps);
+                }else{
+                    $floors[$i]->sizeofobj=0;
+                }
+            }
+        }
+        $desheight=Floor::find($floorid)->desheight; //設計框高度
+        $deswidth=Floor::find($floorid)->deswidth; //設計框寬度
+        $floormaps=FloorMap::where('linkid','=',$floorid)->get(); //該樓層所有書櫃
+        $data=[
+            'id'=>$id,
+            'floors'=>$floors,
+            'floormaps'=>$floormaps,
+            'desheight'=>$desheight,
+            'deswidth'=>$deswidth
+        ];
+        return $content
+            ->title('平面圖編輯')
+            ->description('請先選擇要編輯平面圖的樓層')
+            ->view("admin.librarymap.floormapindex",$data);
+    }
+
+    //顯示編輯樓層書櫃頁面
+    public function floormapedit($floorid,Content $content){
+        (new \Encore\Admin\Admin)->disablePjax();
+        $id=$floorid;
+        $checks=Floor::find($floorid);
+        $floors=Floor::orderBy('ord','desc')->get();
+        if(!empty($floors)){ //計算櫃數
+            for($i=0;$i<sizeof($floors);$i++){
+                $maps=FloorMap::where('linkid','=',$floors[$i]->id)->get();
+                if(!empty($maps)) {
+                    $floors[$i]->sizeofobj=count($maps);
+                }else{
+                    $floors[$i]->sizeofobj=0;
+                }
+            }
+        }
         $desheight=Floor::find($floorid)->desheight;
         $deswidth=Floor::find($floorid)->deswidth;
         $floormaps=FloorMap::where('linkid','=',$floorid)->get();
@@ -135,10 +186,10 @@ class LibraryMapController extends Controller{
         return $content
             ->title('平面圖編輯')
             ->description('請先選擇要編輯平面圖的樓層')
-            ->view("admin.librarymap.showedit",$data);
+            ->view("admin.librarymap.floormapshow",$data);
     }
 
-    public function editmapsave($floorid,Request $request,Content $content){//儲存樓層地圖資訊
+    public function floormapeditsave($floorid,Request $request,Content $content){//儲存樓層地圖資訊
         $updfloorpid=Floor::find($floorid);
         $updfloorpid->update([
             'desheight'=>(int)$request->all()['designsize_H'],
@@ -200,6 +251,6 @@ class LibraryMapController extends Controller{
                 FloorMap::destroy($ids[$i]);
             }
         }
-        return redirect()->route("admin.librarymap.editmap",$floorid);
+        return redirect()->route("admin.librarymap.floormapedit",$floorid);
     }
 }

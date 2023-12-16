@@ -14,13 +14,14 @@ Route::group([
     $router->get('/', 'HomeController@index')->name('home');
     $router->get('/librarymap', 'LibraryMapController@index')->name('librarymap');
     //樓層編輯
-    $router->get('/librarymap/floor', 'LibraryMapController@floor')->name('librarymap.floor');
-    $router->post('/librarymap/floor', 'LibraryMapController@floorSave')->name('librarymap.floorSave');
+    $router->get('/librarymap/floor', 'LibraryMapController@floor')->name('librarymap.floor'); //index
+    $router->get('/librarymap/floor/edit', 'LibraryMapController@flooredit')->name('librarymap.flooredit');
+    $router->post('/librarymap/floor/edit', 'LibraryMapController@flooreditsave')->name('librarymap.flooreditsave');
 
     ///樓層平面圖編輯
-    $router->get('/librarymap/map', 'LibraryMapController@map')->name('librarymap.map');
-    $router->get('/librarymap/map/{floorid}', 'LibraryMapController@editmap')->name('librarymap.editmap');
-    $router->post('/librarymap/map/{floorid}', 'LibraryMapController@editmapsave')->name('librarymap.editmap');
+    $router->get('/librarymap/floormap/{floorid}', 'LibraryMapController@floormap')->name('librarymap.floormap');
+    $router->get('/librarymap/floormap/edit/{floorid}', 'LibraryMapController@floormapedit')->name('librarymap.floormapedit');
+    $router->post('/librarymap/floormap/edit/{floorid}', 'LibraryMapController@floormapeditsave')->name('librarymap.floormapeditsave');
 
 
 });

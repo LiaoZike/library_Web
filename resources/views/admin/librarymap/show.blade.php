@@ -1,6 +1,6 @@
 <div class="container-fluid">
-    <a href="{{route('admin.librarymap.floor')}}" class="editBtn"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-        點我開啟編輯模式</a>
+    <a href="{{route('admin.librarymap.floor')}}" class="editBtn"><i class="fa fa-window-close-o" aria-hidden="true"></i>
+        點我關閉編輯模式</a>
 </div>
 <style>
     .editBtn{
@@ -12,69 +12,337 @@
         font-size: 20px;
         border: 2px solid black;
         border-radius: 10px;
-        background-color: #afdbf2;
+        background-color: #febdbd;
         color:black;
         transition: background .2s;
     }
     .editBtn:hover{
         color:black;
-        background-color: #8ed3f8;
+        background-color: #f88e8e;
     }
 </style>
 <div class="container-fluid mt-2">
     <div class="row">
-        <div class="container-fluid">
-            <div class="row title">
-                <div class="col-12 col-sm-1">順序</div>
-                <div class="col-12 col-sm-5">樓層代碼</div>
-                <div class="col-12 col-sm-4">備註</div>
-                <div class="col-12 col-sm-2">物件數</div>
-            </div>
-            @foreach($floors as $floor)
-                <a href="{{route("admin.librarymap.editmap",$floor->id)}}" class="row floor">
-                    <div class="col-12 col-sm-1 floor_ord">{{$floor->ord}}</div>
-                    <div class="col-12 col-sm-5 floor_name">{{$floor->name}}</div>
-                    <div class="col-12 col-sm-4">{{$floor->note}}</div>
-                    <div class="col-12 col-sm-2">{{$floor->count}}</div>
-                </a>
-            @endforeach
+        <!-- 模態框背景 -->
+        <div id="modalBg" class="modal-bg"></div>
 
+        <!-- 確認框 -->
+        <div id="customConfirm" class="confirmation">
+            <button class="close-btn" onclick="cancelSubmit()">×</button>
+            <div class="message">確定要送出嗎?</div>
+            <div class="buttons">
+                <button class="cancel_btn" onclick="cancelSubmit()">取消</button>
+                <button onclick="confirmSubmit()">確定</button>
+            </div>
         </div>
+
+
+        <form  id="floorForm" method="POST" action="{{route("admin.librarymap.flooreditsave")}}">
+            @csrf
+            <button type="button" id="addFloor"><i class="fa fa-plus" aria-hidden="true"></i> 新增欄位</button>
+            <button type="button" id="checkFloor" onclick="return showCustomConfirm()"><i class="fa fa-upload" aria-hidden="true"></i> 儲存送出</button>
+                    <div class="mt-1" id="floorFields">
+                        <div class="row floortitle">
+                            <div class="col-12 col-sm-1">順序</div>
+                            <div class="col-12 col-sm-3">樓層代碼</div>
+                            <div class="col-12 col-sm-3">備註</div>
+                            <div class="col-12 col-sm-1">櫃數</div>
+                            <div class="col-12 col-sm-4">功能鍵</div>
+                        </div>
+                        <div class="flooritems" id="sortable-list">
+                        <!-- 初始的一組輸入欄位 -->
+                        @foreach($floors as $floor)
+                            <div class="row flooritem" draggable="true">
+                                <div style="display:none"><input type="text" name="id[]" value="{{$floor->id}}" min="1" readonly tabindex="-1"></div>
+                                <div class="col-12 col-sm-1 readonly"><input type="text" name="ord[]" value="{{$floor->ord}}" min="1" readonly tabindex="-1"></div>
+                                <div class="col-12 col-sm-3"><input type="text" name="name[]"  placeholder="樓層" value="{{$floor->name}}"></div>
+                                <div class="col-12 col-sm-3"><input type="text" name="note[]" placeholder="備註" value="{{$floor->note}}"></div>
+                                <div class="col-12 col-sm-1">{{$floor->count}}</div>
+                                <div class="col-12 col-sm-2"><button type="button" class="remove-floor">刪除</button></div>
+
+                                <!-- 上移按鈕  -->
+                                <div class="col-12 col-sm-1">
+                                    <button type="button" class="move-up">↑</button>
+                                </div>
+                                <!-- 下移按鈕  -->
+                                <div class="col-12 col-sm-1">
+                                    <button type="button" class="move-down">↓</button>
+                                </div>
+                            </div>
+                        @endforeach
+                        </div>
+                    </div>
+        </form>
+
     </div>
     <style>
-        .title{
+
+        .bck_orange{
+            background-color: orange !important;
+        }
+        #floorFields{
             text-align: center;
+        }
+        .floortitle{
             background-color: #555;
             color:white;
         }
-        .floor:nth-child(2){
-            border-top: 1px solid black;
-        }
-        .floor{
-            /*border: 1px solid black;*/
+        .flooritem{
+            padding-top: 2px;
+            padding-bottom: 2px;
             border-bottom: 1px solid black;
-            padding: 10px 0px;
-            text-align: center;
             background-color: #ddd;
-            color:black;
+        }
+        .flooritem button{
+            width: 100%;
+        }
+        .flooritem input{
+            width: 100%;
+        }
+        .flooritem input[type="text"] {
+            margin-right: 10px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
         }
 
-        .floor:hover{
-            color:black;
-            background-color: rgba(0, 95, 247, 0.65);
-            transition:  background-color .3s;
+        .flooritem input[type="text"]:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            transition: box-shadow .4s ,border-color .4s;
+        }
+        .remove-floor {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .flooritem:hover{
+            background-color: #ffd180 !important;
+            transition: background-color .2s;
+        }
+        .remove-floor:hover {
+            background-color: #c82333;
+        }
+        .readonly input{
+            background-color: rgba(128, 128, 128, 0.35);
+            border:1px #ccc solid !important;
+            box-shadow: none !important;
+            cursor: not-allowed;
+        }
+        #addFloor {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
 
+        #addFloor:hover {
+            background-color: #218838;
         }
-        .floor_name{
-            background-color: rgba(255, 140, 0, 0.78);
-            border-radius: 5px;
+
+        #checkFloor {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
         }
-        .floor_ord{
-            background-color: rgba(170, 170, 170, 0.25);
-            border-radius: 500px;
+
+        #checkFloor:hover {
+            background-color: #0056b3;
+        }
+        td{
+            min-width: 180px;
+        }
+
+        /* 自定義的確認框樣式 */
+        /* 確認框外部背景 */
+        .modal-bg {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 透明度背景 */
+            z-index: 1000;
+        }
+
+        /* 確認框樣式 */
+        .confirmation {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            width: 300px;
+            max-width: 80%;
             text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .confirmation .message {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .confirmation .buttons {
+            text-align: center;
+        }
+
+        .confirmation button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .confirmation button:hover {
+            background-color: #0056b3;
+        }
+        .confirmation .close-btn:hover,.cancel_btn:hover{
+            background-color: #ff0000 !important;
+        }
+        /* 確認框中的取消按鈕（X） */
+        .confirmation .close-btn {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            cursor: pointer;
+            color: #888;
+            font-size: 30px;
+            background: none;
+            border: none;
+        }
+
+        .move-up:hover, .move-down:hover{
+            background-color: greenyellow;
         }
     </style>
 </div>
+ ※支援樓層拖曳功能：可使用滑鼠拖曳樓層改變順序。<br>
+ ※離開編輯介面時記得儲存送出。
+<!-- 引入 jQuery UI -->
+<script src="{{asset('js/jquery-ui.min.js')}}"></script>
+<link rel="stylesheet" href="{{asset('css/jquery-ui.css')}}">
+
+
 <script>
+    function showCustomConfirm() {
+        document.getElementById("modalBg").style.display = "block";
+        document.getElementById("customConfirm").style.display = "block";
+        return false;
+    }
+
+    function cancelSubmit() {
+        document.getElementById("modalBg").style.display = "none";
+        document.getElementById("customConfirm").style.display = "none";
+        return false;
+    }
+    function confirmSubmit() {
+        // 確定提交表單
+        document.getElementById("floorForm").submit();
+    }
+
+    $(document).ready(function() {
+        $('#sortable-list').sortable({
+            axis: 'y',
+            cursor: 'grabbing',
+            update: function (event, ui) {
+                updateOrder(); // 移除後更新所有欄位的順序值
+
+            }
+        });
+        // $('#sortable-list').disableSelection();
+
+        flash_move();
+        $('#modalBg').off();
+        $('#floorFields').off();
+        $('#addFloor').off();
+        // 更新所有欄位的順序值
+        function updateOrder() {
+            var totalItems = $('#floorFields .flooritem').length;
+            $('#floorFields .flooritem').each(function(index) {
+                var newIndex = totalItems - index;
+                $(this).find('input[name="ord[]"]').val(newIndex);
+            });
+        }
+
+        // 新增欄位按鈕點擊事件
+        $('#addFloor').on('click',function() {
+            // 新增一組輸入欄位
+            var newField = $(
+
+                '<div class="row flooritem bck_orange">'+
+                '    <div style="display:none"><input type="text" name="id[]" value="-1" min="1" readonly tabindex="-1"><\/div>'+
+                '    <div class="col-12 col-sm-1 readonly"><input type="text" name="ord[]" min="1" readonly tabindex="-1"><\/div>'+
+                '    <div class="col-12 col-sm-3"><input type="text" name="name[]"  placeholder="樓層"><\/div>'+
+                '    <div class="col-12 col-sm-3"><input type="text" name="note[]" placeholder="備註"><\/div>'+
+                '    <div class="col-12 col-sm-1">0<\/div>'+
+                '    <div class="col-12 col-sm-2"><button type="button" class="remove-floor">刪除<\/button><\/div>'+
+                '    <!-- 上移按鈕  -->'+
+                '    <div class="col-12 col-sm-1">'+
+                '        <button type="button" class="move-up">↑<\/button>'+
+                '    <\/div>'+
+                '    <!-- 下移按鈕  -->'+
+                '    <div class="col-12 col-sm-1">'+
+                '        <button type="button" class="move-down">↓<\/button>'+
+                '    <\/div>'+
+                '<\/div>'
+            );
+
+            $('.flooritems').prepend(newField); // 加入到表單中
+            flash_move();
+            updateOrder(); // 移除後更新所有欄位的順序值
+        });
+        // 移除欄位按鈕點擊事件
+        $('#floorFields').on('click', '.remove-floor', function() {
+            $(this).closest('.flooritem').remove(); // 移除被點擊的輸入欄位組
+            updateOrder(); // 移除後更新所有欄位的順序值
+        });
+
+        function flash_move(){
+            $('.move-up').off();
+            $('.move-down').off();
+
+            // 上移按鈕點擊事件
+            $('.move-up').on('click',function() {
+                var row = $(this).closest('.flooritem');
+                row.insertBefore(row.prev());
+                updateOrder(); // 移除後更新所有欄位的順序值
+            });
+
+            // 下移按鈕點擊事件
+            $('.move-down').on('click',function() {
+                var row = $(this).closest('.flooritem');
+                row.insertAfter(row.next());
+                updateOrder(); // 移除後更新所有欄位的順序值
+            });
+        }
+        $('#modalBg').on('click',function(event) {
+            if (event.target === this) {
+                document.getElementById("modalBg").style.display = "none";
+                document.getElementById("customConfirm").style.display = "none";
+            }
+        });
+    });
+
 </script>

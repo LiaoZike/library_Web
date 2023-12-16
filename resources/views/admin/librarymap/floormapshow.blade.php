@@ -1,5 +1,28 @@
-
 <div class="container-fluid">
+    <a href="{{route('admin.librarymap.floormap',$id)}}" class="editBtn"><i class="fa fa-window-close-o" aria-hidden="true"></i>
+        點我關閉編輯模式</a>
+</div>
+<style>
+    .editBtn{
+        width: 100%;
+        display: block;
+        cursor: pointer;
+        text-align: center;
+        padding: 1px 0px;
+        font-size: 20px;
+        border: 2px solid black;
+        border-radius: 10px;
+        background-color: #febdbd;
+        color:black;
+        transition: background .2s;
+    }
+    .editBtn:hover{
+        color:black;
+        background-color: #f88e8e;
+    }
+</style>
+
+<div class="container-fluid mt-2">
     <div class="diagram_info">
         <input type="checkbox" id="checkhide">
         <div class="diagram_title">
@@ -34,29 +57,33 @@
         <div class="col-12 col-sm-4 col-md-3">
             <div class="row title">
                 <div class="col-12 col-sm-2">順序</div>
-                <div class="col-12 col-sm-5">樓層代碼</div>
-                <div class="col-12 col-sm-5">備註</div>
+                <div class="col-12 col-sm-4">樓層代碼</div>
+                <div class="col-12 col-sm-4">備註</div>
+                <div class="col-12 col-sm-2">櫃數</div>
             </div>
             @foreach($floors as $floor)
-                <a href="{{route("admin.librarymap.editmap",$floor->id)}}" class="row floor"  @if($floor->id==$id) style="background-color: rgba(0,105,255,0.89)" @endif>
+                <a href="{{route("admin.librarymap.floormapedit",$floor->id)}}" class="row floor"  @if($floor->id==$id) style="background-color: rgba(0,105,255,0.89)" @endif>
                     <div class="col-12 col-sm-2 floor_ord">{{$floor->ord}}</div>
-                    <div class="col-12 col-sm-5 floor_name">{{$floor->name}}</div>
-                    <div class="col-12 col-sm-5">{{$floor->note}}</div>
+                    <div class="col-12 col-sm-4 floor_name">{{$floor->name}}</div>
+                    <div class="col-12 col-sm-4">{{$floor->note}}</div>
+                    <div class="col-12 col-sm-2">{{$floor->sizeofobj}}</div>
                 </a>
             @endforeach
         </div>
         <div class="col-12 col-sm-8 col-md-9">
             <!-- 功能選單位置 -->
-            <form action="{{route("admin.librarymap.editmap",$id)}}" method="post" id="designinput">
+            <form action="{{route("admin.librarymap.floormapedit",$id)}}" method="post" id="designinput">
                 @csrf()
                 <button id="addinputGP" type="button"><i class="fa fa-plus" aria-hidden="true"></i> 新增</button>
                 <button id="submit" type="submit"><i class="fa fa-upload" aria-hidden="true"></i> 儲存</button>
-                <div class="row mt-1 mx-1">
-                    設定平面室內長寬度
+                <div class="row mt-1 mx-1" style="text-align: center;background-color: #555;color:white;">
+                    <span>設定平面高寬度</span>
                 </div>
                 <div class="row  mx-1" id="designsize">
-                    長:<input type="number" value="{{$desheight}}" name="designsize_H" min=0 max=3000 placeholder="長度(px)">
-                    寬:<input type="number" value="{{$deswidth}}" name="designsize_W" min=0 max=3000 placeholder="寬度(px)">
+                    高:&nbsp;&nbsp;<input class="col-11" type="number" value="{{$desheight}}" name="designsize_H" min=0 max=2000 placeholder="長度(px)">
+                   </div>
+                <div class="row  mx-1" id="designsize">
+                    寬:&nbsp;&nbsp;<input class="col-11" type="number" value="{{$deswidth}}" name="designsize_W" min=0 max=2000 placeholder="寬度(px)">
                 </div>
                 <div class="row title pt-1 mt-3 mx-1">
 {{--                    <div class="col-1">ID</div>--}}
@@ -72,18 +99,20 @@
                     @foreach($floormaps as $floormap)
                         <div class="row inputGP">
                             <div class="col-1" style="display: none" ><span><input style="display: none" type="text" name="id[]" value="{{$floormap->id}}"></span></div>
-                            <div class="col-3"><input type="text" name="name[]" placeholder="書櫃碼" maxlength="20" value="{{$floormap->bookcaseName}}"> </div>
-                            <div class="col-3"><input type="text" name="note[]" placeholder="備註" maxlength="30" value="{{$floormap->bookcaseNote}}"> </div>
-                            <div class="col-1"><input type="number" min="0" name="top[]" placeholder="Top" value="{{$floormap->top}}"> </div>
-                            <div class="col-1"><input type="number" min="0" name="left[]" placeholder="Left" value="{{$floormap->left}}"> </div>
-                            <div class="col-1"><input type="number" min="1" name="height[]" placeholder="Height" value="{{$floormap->height}}"> </div>
-                            <div class="col-1"><input type="number" min="1" name="width[]" placeholder="Width" value="{{$floormap->width}}"> </div>
-                            <div class="col-2"><button type="button" class="destoryinputGP">刪除</button></div>
+                            <div class="col-12 col-sm-3"><input type="text" name="name[]" placeholder="書櫃碼" maxlength="20" value="{{$floormap->bookcaseName}}"> </div>
+                            <div class="col-12 col-sm-3"><input type="text" name="note[]" placeholder="備註" maxlength="30" value="{{$floormap->bookcaseNote}}"> </div>
+                            <div class="col-12 col-sm-1"><input type="number" min="0" name="top[]" placeholder="Top" value="{{$floormap->top}}"> </div>
+                            <div class="col-12 col-sm-1"><input type="number" min="0" name="left[]" placeholder="Left" value="{{$floormap->left}}"> </div>
+                            <div class="col-12 col-sm-1"><input type="number" min="1" name="height[]" placeholder="Height" value="{{$floormap->height}}"> </div>
+                            <div class="col-12 col-sm-1"><input type="number" min="1" name="width[]" placeholder="Width" value="{{$floormap->width}}"> </div>
+                            <div class="col-12 col-sm-2"><button type="button" class="destoryinputGP">刪除</button></div>
                         </div>
                     @endforeach
                 </div>
             </form>
         </div>
+    </div>
+    <div class="designblockrow">
         <div class="designblock mt-3" style="width: {{$deswidth}}px;height: {{$desheight}}px">
             @foreach($floormaps as $floormap)
             <div class="draggable" style="width:{{$floormap->width}}px;height: {{$floormap->height}}px;top:{{$floormap->top}}px;left:{{$floormap->left}}px;">
@@ -98,6 +127,14 @@
     </div>
 
     <style>
+        .container-fluid{
+            overflow-x:auto;
+        }
+        .designblockrow{
+            width: 100%;
+            overflow-x:auto;
+        }
+
         #checkhide:checked ~ .diagram_content{
             max-height: 0;
             max-width: 40px;
@@ -254,7 +291,7 @@
             color:white;
         }
         .designblock{
-            outline: black 3px solid;
+            outline: black 1px solid;
             overflow: auto;
             position: relative;
             background-color: #f4ecdc;
@@ -316,6 +353,7 @@
         }
     </style>
 </div>
+<div class="mb-5">說明...</div>
 <script>
     can_ctrlV=false;
     copy_element= {};
@@ -341,20 +379,16 @@
                 !($(e.target).closest('.inputdivGP input').length > 0))) {
                 //點設計區塊 或是 表單空白處 ->可以貼上
                 can_ctrlV=true;
-                console.log("點設計區塊 或是 表單空白處");
             } else if (($(e.target).closest('.diagram_info').length > 0) ||
                 ($(e.target).closest('.inputGP').length > 0) ||
                 ($(e.target).closest('#addinputGP').length > 0)) {
                 //點輔助框input 或表單的input 或新增不要被刷掉
                 can_ctrlV=false;
-                console.log("點輔助框input");
             }else{
                 can_ctrlV=false;
                 focus_element(null,select_element);
                 //改變輔助框inpu
                 setdiagram_info("","","","","","");
-
-                console.log("未定義空白處");
             }
         });
         /* 鍵盤事件 */
@@ -397,7 +431,7 @@
         $(document).on('mouseup', function() {
             ismove = false; //移動元素
             move_currentElement = null;
-
+            isdesignresize=false;
             isResizing = false; //改變元素大小
         });
 
@@ -422,6 +456,10 @@
 
                 move_prevX = e.pageX;
                 move_prevY = e.pageY;
+            }
+            if(isdesignresize){
+                $('#designsize input[name="designsize_H"]').val(parseInt($('.designblock').css('height'),10));
+                $('#designsize input[name="designsize_W"]').val(parseInt($('.designblock').css('width'),10))
             }
         });
         /**************************************/
@@ -540,7 +578,7 @@
         let resize_box; //要改變大小的元素
         // link: resize1
         /**************** END. ****************/
-
+        let isdesignresize = false;
 
         /**************************************/
         /*-------        功能函式        -------*/
@@ -560,13 +598,13 @@
             newField = $(
                 '<div class="row inputGP bck_orange">'+
                 '    <div class="col-1" style="display: none"><span><input style="display: none" type="text" name="id[]" value="-1"><\/span><\/div>'+
-                '    <div class="col-3"><input type="text" name="name[]" maxlength="20"  placeholder="書櫃碼" value="'+name+'"> <\/div>'+
-                '    <div class="col-3"><input type="text" name="note[]" maxlength="30" placeholder="備註"> <\/div>'+
-                '    <div class="col-1"><input type="number" name="top[]" placeholder="Top" value="'+top+'"> <\/div>'+
-                '    <div class="col-1"><input type="number" name="left[]" placeholder="Left" value="'+left+'"> <\/div>'+
-                '    <div class="col-1"><input type="number" name="height[]" placeholder="Height" value="'+height+'"> <\/div>'+
-                '    <div class="col-1"><input type="number" name="width[]" placeholder="width" value="'+width+'"> <\/div>'+
-                '    <div class="col-2"><button type="button" class="destoryinputGP">刪除<\/button><\/div>'+
+                '    <div class="col-12 col-sm-3"><input type="text" name="name[]" maxlength="20"  placeholder="書櫃碼" value="'+name+'"> <\/div>'+
+                '    <div class="col-12 col-sm-3"><input type="text" name="note[]" maxlength="30" placeholder="備註"> <\/div>'+
+                '    <div class="col-12 col-sm-1"><input type="number" name="top[]" placeholder="Top" value="'+top+'"> <\/div>'+
+                '    <div class="col-12 col-sm-1"><input type="number" name="left[]" placeholder="Left" value="'+left+'"> <\/div>'+
+                '    <div class="col-12 col-sm-1"><input type="number" name="height[]" placeholder="Height" value="'+height+'"> <\/div>'+
+                '    <div class="col-12 col-sm-1"><input type="number" name="width[]" placeholder="width" value="'+width+'"> <\/div>'+
+                '    <div class="col-12 col-sm-2"><button type="button" class="destoryinputGP">刪除<\/button><\/div>'+
                 '<\/div>'
             );
             // $('.inputdivGP').append(newField);
@@ -645,25 +683,29 @@
             });
             //畫布長寬設定
             $('#designsize input[name="designsize_H"]').on('input',function (){
-                const userInput = $(this).val();
-                if(userInput>=3000){
-                    this.value = 3000;
+                var userInput = $(this).val();
+                if(userInput>=2000){
+                    this.value = 2000;
+                    userInput=2000;
                 }
                 if(userInput<=1){
                     this.value = 1;
+                    userInput=1;
                 }
-                $('.designblock').css('height',userInput)
+                $('.designblock').css('height',userInput+'px')
             });
 
             $('#designsize input[name="designsize_W"]').on('input',function (){
-                const userInput = $(this).val();
-                if(userInput>=3000){
-                    this.value = 3000;
+                var userInput = $(this).val();
+                if(userInput>=2000){
+                    this.value = 2000;
+                    userInput=2000;
                 }
                 if(userInput<=1){
                     this.value = 1;
+                    userInput=1;
                 }
-                $('.designblock').css('width',userInput)
+                $('.designblock').css('width',userInput+'px')
             });
             //可以透過表單input Focus到設計圖
             $('.inputdivGP .inputGP').click(function (e){
@@ -750,6 +792,9 @@
         /* 改變焦點的背景顏色等 */
         $('#addinputGP').click(function (){
             addelement("lib_id?","",10,10,50,50); //link:addele1
+        });
+        $('.designblock').on('mousedown',function (e){
+            isdesignresize = true;
         });
         flash_move();
         flash_inputHanld();
