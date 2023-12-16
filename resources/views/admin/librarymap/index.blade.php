@@ -1,4 +1,27 @@
-<div class="container">
+<div class="container-fluid">
+    <a href="{{route('admin.librarymap.map')}}" class="editBtn"><i class="fa fa-window-close-o" aria-hidden="true"></i>
+        點我關閉編輯模式</a>
+</div>
+<style>
+    .editBtn{
+        width: 100%;
+        display: block;
+        cursor: pointer;
+        text-align: center;
+        padding: 1px 0px;
+        font-size: 20px;
+        border: 2px solid black;
+        border-radius: 10px;
+        background-color: #afdbf2;
+        color:black;
+        transition: background .2s;
+    }
+    .editBtn:hover{
+        color:black;
+        background-color: #8ed3f8;
+    }
+</style>
+<div class="container-fluid mt-2">
     <div class="row">
         <!-- 模態框背景 -->
         <div id="modalBg" class="modal-bg"></div>
@@ -8,7 +31,7 @@
             <button class="close-btn" onclick="cancelSubmit()">×</button>
             <div class="message">確定要送出嗎?</div>
             <div class="buttons">
-                <button onclick="cancelSubmit()">取消</button>
+                <button class="cancel_btn" onclick="cancelSubmit()">取消</button>
                 <button onclick="confirmSubmit()">確定</button>
             </div>
         </div>
@@ -16,25 +39,25 @@
 
         <form  id="floorForm" method="POST" action="{{route("admin.librarymap.floorSave")}}">
             @csrf
-
-            <button type="button" id="addFloor">+ 新增欄位</button>
-            <button type="button" id="checkFloor" onclick="return showCustomConfirm()">v 儲存送出</button>
-                    <div class="container-fluid mt-3" id="floorFields">
+            <button type="button" id="addFloor"><i class="fa fa-plus" aria-hidden="true"></i> 新增欄位</button>
+            <button type="button" id="checkFloor" onclick="return showCustomConfirm()"><i class="fa fa-upload" aria-hidden="true"></i> 儲存送出</button>
+                    <div class="mt-1" id="floorFields">
                         <div class="row floortitle">
-                            <div class="col-12 col-sm-2">排序</div>
+                            <div class="col-12 col-sm-1">順序</div>
                             <div class="col-12 col-sm-3">樓層代碼</div>
                             <div class="col-12 col-sm-3">備註</div>
+                            <div class="col-12 col-sm-1">物件數</div>
                             <div class="col-12 col-sm-4">功能鍵</div>
                         </div>
-                        <div class="row flooritems">
+                        <div class="flooritems" id="sortable-list">
                         <!-- 初始的一組輸入欄位 -->
                         @foreach($floors as $floor)
-
-                            <div class="row flooritem">
+                            <div class="row flooritem" draggable="true">
                                 <div style="display:none"><input type="text" name="id[]" value="{{$floor->id}}" min="1" readonly tabindex="-1"></div>
-                                <div class="col-12 col-sm-2 readonly"><input type="text" name="ord[]" value="{{$floor->ord}}" min="1" readonly tabindex="-1"></div>
+                                <div class="col-12 col-sm-1 readonly"><input type="text" name="ord[]" value="{{$floor->ord}}" min="1" readonly tabindex="-1"></div>
                                 <div class="col-12 col-sm-3"><input type="text" name="name[]"  placeholder="樓層" value="{{$floor->name}}"></div>
                                 <div class="col-12 col-sm-3"><input type="text" name="note[]" placeholder="備註" value="{{$floor->note}}"></div>
+                                <div class="col-12 col-sm-1">{{$floor->count}}</div>
                                 <div class="col-12 col-sm-2"><button type="button" class="remove-floor">刪除</button></div>
 
                                 <!-- 上移按鈕  -->
@@ -55,7 +78,7 @@
     <style>
 
         .bck_orange{
-            background-color: orange;
+            background-color: orange !important;
         }
         #floorFields{
             text-align: center;
@@ -68,6 +91,7 @@
             padding-top: 2px;
             padding-bottom: 2px;
             border-bottom: 1px solid black;
+            background-color: #ddd;
         }
         .flooritem button{
             width: 100%;
@@ -194,7 +218,9 @@
         .confirmation button:hover {
             background-color: #0056b3;
         }
-
+        .confirmation .close-btn:hover,.cancel_btn:hover{
+            background-color: #ff0000 !important;
+        }
         /* 確認框中的取消按鈕（X） */
         .confirmation .close-btn {
             position: absolute;
@@ -212,6 +238,13 @@
         }
     </style>
 </div>
+ ※支援樓層拖曳功能：可使用滑鼠拖曳樓層改變順序。<br>
+ ※離開編輯介面時記得儲存送出。
+<!-- 引入 jQuery UI -->
+<script src="{{asset('js/jquery-ui.min.js')}}"></script>
+<link rel="stylesheet" href="{{asset('css/jquery-ui.css')}}">
+
+
 <script>
     function showCustomConfirm() {
         document.getElementById("modalBg").style.display = "block";
@@ -230,7 +263,20 @@
     }
 
     $(document).ready(function() {
+        $('#sortable-list').sortable({
+            axis: 'y',
+            cursor: 'grabbing',
+            update: function (event, ui) {
+                updateOrder(); // 移除後更新所有欄位的順序值
+
+            }
+        });
+        $('#sortable-list').disableSelection();
+
         flash_move();
+        $('#modalBg').off();
+        $('#floorFields').off();
+        $('#addFloor').off();
         // 更新所有欄位的順序值
         function updateOrder() {
             var totalItems = $('#floorFields .flooritem').length;
@@ -241,21 +287,25 @@
         }
 
         // 新增欄位按鈕點擊事件
-        $('#addFloor').click(function() {
+        $('#addFloor').on('click',function() {
             // 新增一組輸入欄位
             var newField = $(
+
                 '<div class="row flooritem bck_orange">'+
-                '<div style="display:none"><input type="text" name="id[]" value="-1" min="1" readonly tabindex="-1"><\/div>'+
-                '<div class="col-12 col-sm-2 readonly"><input type="text" name="ord[]" value="0" min="1" readonly tabindex="-1"><\/div>'+
-                    '<div class="col-12 col-sm-3"><input type="text" name="name[]"  placeholder="樓層"><\/div>'+
-                    '<div class="col-12 col-sm-3"><input type="text" name="note[]" placeholder="備註"><\/div>'+
-                    '<div class="col-12 col-sm-2"><button type="button" class="remove-floor">刪除</button><\/div>'+
-                    '<div class="col-12 col-sm-1">'+
-                        '<button type="button" class="move-up">↑<\/button>'+
-                    '<\/div>'+
-                    '<div class="col-12 col-sm-1">'+
-                    '<button type="button" class="move-down">↓<\/button>'+
-                    '<\/div>'+
+                '    <div style="display:none"><input type="text" name="id[]" value="-1" min="1" readonly tabindex="-1"><\/div>'+
+                '    <div class="col-12 col-sm-1 readonly"><input type="text" name="ord[]" min="1" readonly tabindex="-1"><\/div>'+
+                '    <div class="col-12 col-sm-3"><input type="text" name="name[]"  placeholder="樓層"><\/div>'+
+                '    <div class="col-12 col-sm-3"><input type="text" name="note[]" placeholder="備註"><\/div>'+
+                '    <div class="col-12 col-sm-1">0<\/div>'+
+                '    <div class="col-12 col-sm-2"><button type="button" class="remove-floor">刪除<\/button><\/div>'+
+                '    <!-- 上移按鈕  -->'+
+                '    <div class="col-12 col-sm-1">'+
+                '        <button type="button" class="move-up">↑<\/button>'+
+                '    <\/div>'+
+                '    <!-- 下移按鈕  -->'+
+                '    <div class="col-12 col-sm-1">'+
+                '        <button type="button" class="move-down">↓<\/button>'+
+                '    <\/div>'+
                 '<\/div>'
             );
 
@@ -263,7 +313,6 @@
             flash_move();
             updateOrder(); // 移除後更新所有欄位的順序值
         });
-
         // 移除欄位按鈕點擊事件
         $('#floorFields').on('click', '.remove-floor', function() {
             $(this).closest('.flooritem').remove(); // 移除被點擊的輸入欄位組
@@ -275,20 +324,20 @@
             $('.move-down').off();
 
             // 上移按鈕點擊事件
-            $('.move-up').click(function() {
+            $('.move-up').on('click',function() {
                 var row = $(this).closest('.flooritem');
                 row.insertBefore(row.prev());
                 updateOrder(); // 移除後更新所有欄位的順序值
             });
 
             // 下移按鈕點擊事件
-            $('.move-down').click(function() {
+            $('.move-down').on('click',function() {
                 var row = $(this).closest('.flooritem');
                 row.insertAfter(row.next());
                 updateOrder(); // 移除後更新所有欄位的順序值
             });
         }
-        $('#modalBg').click(function(event) {
+        $('#modalBg').on('click',function(event) {
             if (event.target === this) {
                 document.getElementById("modalBg").style.display = "none";
                 document.getElementById("customConfirm").style.display = "none";

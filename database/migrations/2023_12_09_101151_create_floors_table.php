@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->id(); //自動增加ID
             $table->integer("ord")->default(0); //順序
             $table->string("name")->default("未命名樓層");; //樓層名稱
+            $table->integer("desheight")->default(600);; //設計畫面長度
+            $table->integer("deswidth")->default(1600);; //設計畫布寬度
             $table->string("note")->nullable(); //備註
             $table->timestamps();
         });

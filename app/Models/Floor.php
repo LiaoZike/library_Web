@@ -11,6 +11,8 @@ class Floor extends Model{
     protected $fillable=[
         'ord',
         'name',
-        'note'
+        'note',
+        'desheight',
+        'deswidth'
     ];
 }
