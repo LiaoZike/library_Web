@@ -15,5 +15,6 @@ class FloorMap extends Model{
         'left',
         'height',
         'width',
+        'rotate'
     ];
 }

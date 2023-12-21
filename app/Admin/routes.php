@@ -12,7 +12,13 @@ Route::group([
 ], function (Router $router) {
 
     $router->get('/', 'HomeController@index')->name('home');
-    $router->get('/librarymap', 'LibraryMapController@index')->name('librarymap');
+    //盤點結果
+
+    $router->get('/inventory', 'InventoryController@floor')->name('inventory.floor');
+    $router->get('/inventory/{floorid}', 'InventoryController@floormap')->name('inventory.floormap');
+
+
+//    $router->get('/librarymap', 'LibraryMapController@index')->name('librarymap');
     //樓層編輯
     $router->get('/librarymap/floor', 'LibraryMapController@floor')->name('librarymap.floor'); //index
     $router->get('/librarymap/floor/edit', 'LibraryMapController@flooredit')->name('librarymap.flooredit');

@@ -208,9 +208,11 @@ class LibraryMapController extends Controller{
         $leftArray = $request->input('left');
         $heightArray = $request->input('height');
         $widthArray = $request->input('width');
-        if (!empty($idArray) && !empty($nameArray) && !empty($noteArray) && !empty($topArray) && !empty($leftArray) && !empty($heightArray) &&!empty($widthArray)) {
+        $rotateArray = $request->input('rotate');
+        if (!empty($idArray) && !empty($nameArray) && !empty($noteArray) && !empty($topArray) && !empty($leftArray) && !empty($heightArray) &&!empty($widthArray)&&!empty($rotateArray)) {
             if (count($idArray) != count($nameArray) || count($nameArray) != count($noteArray) || count($noteArray) != count($topArray) ||
-            count($topArray) != count($leftArray) || count($leftArray) != count($heightArray)|| count($heightArray) != count($widthArray)) {
+            count($topArray) != count($leftArray) || count($leftArray) != count($heightArray)|| count($heightArray) != count($widthArray) ||
+            count($widthArray) != count($rotateArray)) {
                 abort(404);
             }
         }
@@ -219,7 +221,7 @@ class LibraryMapController extends Controller{
         // 組合每一行的資料
         if (!empty($idArray)) {
             for ($i = 0; $i < sizeof($idArray); $i++) {
-                if ($topArray[$i] == null || $leftArray[$i] == null || $heightArray[$i] == null || $widthArray[$i] == null) {
+                if ($topArray[$i] == null || $leftArray[$i] == null || $heightArray[$i] == null || $widthArray[$i] == null || $rotateArray[$i] == null) {
                     admin_toastr('有資料為空值', 'error');
                     continue;
                 }
@@ -231,6 +233,7 @@ class LibraryMapController extends Controller{
                     'left' => (int)$leftArray[$i] ?: '0',
                     'height' => (int)$heightArray[$i] ?: '0',
                     'width' => (int)$widthArray[$i] ?: '0',
+                    'rotate' => (int)$rotateArray[$i] ?: '0',
                 ];
                 $temp = FloorMap::find((int)$idArray[$i]);
                 if ($temp == null || $idArray[$i] == -1) {

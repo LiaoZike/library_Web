@@ -1,0 +1,160 @@
+
+.bck_orange{
+    background-color: orange !important;
+}
+#floorFields{
+    text-align: center;
+}
+.floortitle{
+    background-color: #555;
+    color:white;
+}
+.flooritem{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid black;
+    background-color: #ddd;
+}
+.flooritem button{
+    width: 100%;
+}
+.flooritem input{
+    width: 100%;
+}
+.flooritem input[type="text"] {
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.flooritem input[type="text"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    transition: box-shadow .4s ,border-color .4s;
+}
+.remove-floor {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+.flooritem:hover{
+    background-color: #ffd180 !important;
+    transition: background-color .2s;
+}
+.remove-floor:hover {
+    background-color: #c82333;
+}
+.readonly input{
+    background-color: rgba(128, 128, 128, 0.35);
+    border:1px #ccc solid !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+}
+#addFloor {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#addFloor:hover {
+    background-color: #218838;
+}
+
+#checkFloor {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#checkFloor:hover {
+    background-color: #0056b3;
+}
+td{
+    min-width: 180px;
+}
+
+/* 自定義的確認框樣式 */
+/* 確認框外部背景 */
+.modal-bg {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 透明度背景 */
+    z-index: 1000;
+}
+
+/* 確認框樣式 */
+.confirmation {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    width: 300px;
+    max-width: 80%;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.confirmation .message {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.confirmation .buttons {
+    text-align: center;
+}
+
+.confirmation button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.confirmation button:hover {
+    background-color: #0056b3;
+}
+.confirmation .close-btn:hover,.cancel_btn:hover{
+    background-color: #ff0000 !important;
+}
+/* 確認框中的取消按鈕（X） */
+.confirmation .close-btn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    cursor: pointer;
+    color: #888;
+    font-size: 30px;
+    background: none;
+    border: none;
+}
+
+.move-up:hover, .move-down:hover{
+    background-color: greenyellow;
+}

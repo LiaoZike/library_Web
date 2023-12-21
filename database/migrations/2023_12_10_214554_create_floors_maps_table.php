@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer("left")->default(0); //Left
             $table->integer("height")->default(0); //高度
             $table->integer("width")->default(0); //寬度
+            $table->integer("rotate")->default(0); //寬度
             $table->timestamps();
         });
     }
