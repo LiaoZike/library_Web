@@ -315,7 +315,7 @@ $(document).ready(function() {
     //link:addele1
     function addelement(name,note,top,left,height,width,rotate){
         var newField = $(
-            '<div class="draggable hidedraggable" style="rotate:'+rotate+'deg;width:'+width+'px;height: '+height+'px;top:'+top+'px;left:'+left+'px;">'+
+            '<div class="draggable hidedraggable bck_lessorange" style="rotate:'+rotate+'deg;width:'+width+'px;height: '+height+'px;top:'+top+'px;left:'+left+'px;">'+
             '   <div class="routebtn"><i class="fa fa-repeat" aria-hidden="true"><\/i><\/div>'+
             '   <div class="text">'+name+'<\/div>'+
             '   <div class="resizable-handle"><\/div>'+

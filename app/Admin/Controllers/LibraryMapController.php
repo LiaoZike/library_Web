@@ -256,4 +256,18 @@ class LibraryMapController extends Controller{
         }
         return redirect()->route("admin.librarymap.floormapedit",$floorid);
     }
+
+
+
+    /************************************/
+    /***********  書櫃顯示/處理  **********/
+    /************************************/
+    //顯示樓層書櫃頁面
+    public function bookcaseedit($floorid){
+        $data=[
+            'floorid'=>$floorid
+        ];
+        return view("admin.librarymap.bookcaseindex",$data);
+    }
+
 }

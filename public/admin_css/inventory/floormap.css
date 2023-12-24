@@ -1,0 +1,67 @@
+a{
+    color:black;
+}
+.container-fluid{
+    overflow-x:auto;
+}
+.designblockrow{
+    width: 100%;
+    overflow-x:auto;
+}
+
+#checkhide:checked ~ .diagram_content{
+    max-height: 0;
+    max-width: 40px;
+}
+#checkhide:checked ~ .diagram_title{
+    max-width: 40px;
+}
+
+
+input{
+    width: 100%;
+}
+
+.title{
+    background-color: #555;
+    color:white;
+}
+.designblock{
+    outline: black 1px solid;
+    overflow: auto;
+    position: relative;
+    background-color: #f4ecdc;
+}
+.draggable{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    width: 50px;
+    height: 50px;
+    top:10px;
+    left:10px;
+    opacity: 0.9;
+    background-color: #e0e0e0;
+    position: absolute;
+    cursor: pointer;
+    user-select: none;
+    outline: 2px solid #000000;
+    border-radius: 5px;
+}
+
+
+.title{
+    text-align: center;
+}
+.floor:nth-child(2){
+    border-top: 1px solid black;
+}
+.floor{
+    /*border: 1px solid black;*/
+    border-bottom: 1px solid black;
+    padding: 10px 0px;
+    text-align: center;
+    background-color: #ddd;
+    color:black;
+}

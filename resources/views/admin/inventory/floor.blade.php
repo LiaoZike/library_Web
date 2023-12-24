@@ -10,7 +10,7 @@
                 <div class="col-12 col-sm-2">已設計櫃數</div>
             </div>
             @foreach($floors as $floor)
-                <a href="{{route("admin.inventory.floormap",$floor->id)}}" class="row floor @if($floor->id%4==3) bck_red @endif">
+                <a href="{{route("admin.inventory.floormap",$floor->id)}}" class="row floor @if($floor->id%4==0) book_notice_red @endif">
                     <div class="col-12 col-sm-1 floor_ord">{{$floor->ord}}</div>
                     <div class="col-12 col-sm-1"></div>
                     <div class="col-12 col-sm-4 floor_name">{{$floor->name}}</div>
@@ -22,9 +22,6 @@
         </div>
     </div>
     <style>
-        .bck_red{
-            background-color: #ff7272 !important;
-        }
         .title{
             text-align: center;
             background-color: #555;

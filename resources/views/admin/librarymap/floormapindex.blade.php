@@ -27,12 +27,67 @@
     <div class="designblockrow">
         <div class="designblock mt-3" style="width: {{$deswidth}}px;height: {{$desheight}}px">
             @foreach($floormaps as $floormap)
-            <a href="#" class="draggable" style="rotate:{{$floormap->rotate}}deg;width:{{$floormap->width}}px;height: {{$floormap->height}}px;top:{{$floormap->top}}px;left:{{$floormap->left}}px;">
+            <div data-id="{{$floormap->id}}" class="draggable" style="rotate:{{$floormap->rotate}}deg;width:{{$floormap->width}}px;height: {{$floormap->height}}px;top:{{$floormap->top}}px;left:{{$floormap->left}}px;">
                     <div class="text" style="rotate:-{{$floormap->rotate}}deg;">{{$floormap->bookcaseName}}</div>
-            </a>
+            </div>
             @endforeach
         </div>
     </div>
 
 </div>
+<div id="contentFrameWrapper">
+    <iframe id="contentFrame" src=""></iframe>
+</div>
+
+<style>
+    .bookcaseblock{
+        background-color: yellow;
+    }
+    #contentFrameWrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        display: none;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.5); /* 背景顏色，可以自行調整透明度 */
+        z-index: 99999;
+    }
+
+    #contentFrame {
+
+        width: 80%; /* iframe 寬度 */
+        height: 80%; /* iframe 高度 */
+        border: none;
+        background-color: white;
+        transform:translateY(-200%);
+        transition: all .2s ease-in-out; /* 動畫效果 */
+    }
+</style>
 <div class="mb-5">說明...</div>
+<script>
+
+    $(document).ready(function () {
+        // 點擊 .draggable 元素時觸發的事件
+        $('.draggable').on('click', function () {
+            var getId = $(this).data('id'); // 假設你將 ID 存儲在 data-id 屬性中
+            console.log('{{ route('admin.librarymap.bookcaseedit', '') }}' + '/' + getId);
+            $('#contentFrameWrapper').css('display', 'flex');
+            setTimeout(function (){
+                $('#contentFrame').css('transform', 'translateY(0)');
+            },10)
+            $('#contentFrame').attr('src', '{{ route('admin.librarymap.bookcaseedit', '') }}' + '/' + getId);
+        });
+
+        // 點擊 #contentFrameWrapper 元素時觸發的事件
+        $('#contentFrameWrapper').click(function () {
+            setTimeout(function (){
+                $('#contentFrameWrapper').css('display', 'none');
+            },200);
+            $('#contentFrame').css('transform', 'translateY(-100%)');
+        });
+    });
+</script>

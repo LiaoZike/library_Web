@@ -29,5 +29,7 @@ Route::group([
     $router->get('/librarymap/floormap/edit/{floorid}', 'LibraryMapController@floormapedit')->name('librarymap.floormapedit');
     $router->post('/librarymap/floormap/edit/{floorid}', 'LibraryMapController@floormapeditsave')->name('librarymap.floormapeditsave');
 
+    ///書櫃詳細編輯
+    $router->get('/librarymap/bookcase/{floormapid}', 'LibraryMapController@bookcaseedit')->name('librarymap.bookcaseedit');
 
 });

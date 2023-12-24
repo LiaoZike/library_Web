@@ -249,5 +249,11 @@ input{
 
 
 .bck_orange{
-    background-color: orange !important;
+    background-color: orange;
 }
+.bck_lessorange{
+    background-color: #b6a88f;
+}
+.bck_eee{
+    background-color: #EEE;
+ }

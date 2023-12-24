@@ -103,7 +103,7 @@
                 </div>
                 <div class="inputdivGP userscrollbar mx-1">
                     @foreach($floormaps as $floormap)
-                        <div class="row inputGP">
+                        <div class="row inputGP bck_eee">
                             <div class="col-1" style="display: none" ><span><input style="display: none" type="text" name="id[]" value="{{$floormap->id}}"></span></div>
                             <div class="col-12 col-sm-3"><input type="text" name="name[]" placeholder="書櫃碼" maxlength="20" value="{{$floormap->bookcaseName}}"> </div>
                             <div class="col-12 col-sm-2"><input type="text" name="note[]" placeholder="備註" maxlength="30" value="{{$floormap->bookcaseNote}}"> </div>
