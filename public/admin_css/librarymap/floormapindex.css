@@ -1,0 +1,56 @@
+.container-fluid{
+    overflow-x:auto;
+}
+.editBtn{
+    background-color: #afdbf2;
+}
+.editBtn:hover{
+    background-color: #8ed3f8;
+}
+
+.title{
+    background-color: #555;
+    color:white;
+}
+.designblock{
+    outline: black 1px solid;
+    overflow: auto;
+    position: relative;
+    background-color: #fff7eb;
+    resize: both;
+}
+.draggable{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    top:10px;
+    left:10px;
+    opacity: 0.9;
+    background-color: #e0e0e0;
+    position: absolute;
+    cursor: grab;
+    user-select: none;
+    outline: 2px solid #000000;
+    text-align: center;
+    line-height: 100%;
+    color:black;
+}
+
+
+.title{
+    text-align: center;
+}
+.floor:nth-child(2){
+    border-top: 1px solid black;
+}
+.floor{
+    /*border: 1px solid black;*/
+    border-bottom: 1px solid black;
+    padding: 10px 0px;
+    text-align: center;
+    background-color: #ddd;
+    color:black;
+}
+

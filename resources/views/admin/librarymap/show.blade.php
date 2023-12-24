@@ -1,26 +1,9 @@
+<link rel="stylesheet" href="{{asset('admin_css/shared.css')}}">
+<link rel="stylesheet" href="{{asset('admin_css/librarymap/show.css')}}">
 <div class="container-fluid">
-    <a href="{{route('admin.librarymap.floor')}}" class="editBtn"><i class="fa fa-window-close-o" aria-hidden="true"></i>
+    <a href="{{route('admin.librarymap.floor')}}" class="editBtn"><i class="fa fa-times" aria-hidden="true"></i>
         點我關閉編輯模式</a>
 </div>
-<style>
-    .editBtn{
-        width: 100%;
-        display: block;
-        cursor: pointer;
-        text-align: center;
-        padding: 1px 0px;
-        font-size: 20px;
-        border: 2px solid black;
-        border-radius: 10px;
-        background-color: #febdbd;
-        color:black;
-        transition: background .2s;
-    }
-    .editBtn:hover{
-        color:black;
-        background-color: #f88e8e;
-    }
-</style>
 <div class="container-fluid mt-2">
     <div class="row">
         <!-- 模態框背景 -->
@@ -47,7 +30,8 @@
                             <div class="col-12 col-sm-3">樓層代碼</div>
                             <div class="col-12 col-sm-3">備註</div>
                             <div class="col-12 col-sm-1">櫃數</div>
-                            <div class="col-12 col-sm-4">功能鍵</div>
+                            <div class="col-12 col-sm-2">刪除</div>
+                            <div class="col-12 col-sm-2">功能鍵</div>
                         </div>
                         <div class="flooritems" id="sortable-list">
                         <!-- 初始的一組輸入欄位 -->
@@ -75,13 +59,11 @@
         </form>
 
     </div>
-    <link rel="stylesheet" href="{{asset('admin_css/librarymap/show.css')}}">
 </div>
  ※支援樓層拖曳功能：可使用滑鼠拖曳樓層改變順序。<br>
  ※離開編輯介面時記得儲存送出。
-<link rel="stylesheet" href="{{asset('admin_css/librarymap/show.css')}}">
 <!-- 引入 jQuery UI -->
-<script src="{{asset('js/jquery-ui.min.js')}}"></script>
-<link rel="stylesheet" href="{{asset('css/jquery-ui.css')}}">
-
+{{--<script src="{{asset('js/jquery-ui.min.js')}}"></script>--}}
+{{--<link rel="stylesheet" href="{{asset('css/jquery-ui.css')}}">--}}
+<script src="{{asset('js/sortable.js')}}"></script>
 <script src="{{asset('admin_js/librarymap/show.js')}}"></script>

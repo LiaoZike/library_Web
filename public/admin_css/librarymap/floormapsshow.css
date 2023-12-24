@@ -1,7 +1,14 @@
-
 .container-fluid{
     overflow-x:auto;
 }
+
+.editBtn{
+    background-color: #febdbd;
+}
+.editBtn:hover{
+    background-color: #f88e8e;
+}
+
 .designblockrow{
     width: 100%;
     overflow-x:auto;
@@ -125,8 +132,8 @@
 }
 .inputdivGP{
     height: 200px;
-    /*overflow-y: auto;*/
-    /*overflow-x:hidden;*/
+    overflow-y: auto;
+    overflow-x:hidden;
 }
 #designinput button{
     height: 100%;
@@ -167,11 +174,17 @@ input{
     outline: black 1px solid;
     overflow: visible !important;
     position: relative;
-    background-color: #f4ecdc;
+    /*background-color: #f4ecdc;*/
+    background-color: #fff7eb;
     resize: both;
+
 
 }
 .draggable{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color:#000;
     width: 50px;
     height: 50px;
     top:10px;
@@ -236,18 +249,7 @@ input{
     color:black;
 }
 
-.floor:hover{
-    color:black;
-    background-color: rgba(0, 95, 247, 0.65);
-    transition:  background-color .3s;
 
-}
-.floor_name{
-    background-color: rgba(255, 140, 0, 0.78);
-    border-radius: 5px;
-}
-.floor_ord{
-    background-color: rgba(170, 170, 170, 0.25);
-    border-radius: 500px;
-    text-align: center;
+.bck_orange{
+    background-color: orange !important;
 }

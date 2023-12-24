@@ -1,0 +1,23 @@
+.editBtn{
+    background-color: #afdbf2;
+}
+.editBtn:hover{
+    background-color: #8ed3f8;
+}
+
+.title{
+    text-align: center;
+    background-color: #555;
+    color:white;
+}
+.floor:nth-child(2){
+    border-top: 1px solid black;
+}
+.floor{
+    /*border: 1px solid black;*/
+    border-bottom: 1px solid black;
+    padding: 10px 0px;
+    text-align: center;
+    background-color: #ddd;
+    color:black;
+}

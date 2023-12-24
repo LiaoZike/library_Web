@@ -107,6 +107,7 @@ $(document).ready(function() {
 
             const index = $(move_currentElement).index();
             $(move_currentElement).css('rotate',angle+'deg')
+            $($(move_currentElement).find('.text')).css('rotate',-1*angle+'deg')
             $($('#designinput input[name="rotate[]"]')[index]).val(angle); //改變input
             $('.diagram_info input[name="rotate"]').val(angle);
         }
@@ -324,14 +325,14 @@ $(document).ready(function() {
         $('.designblock').prepend(newField); // 加入到表單中
 
         newField = $(
-            '<div class="row inputGP">'+
+            '<div class="row inputGP bck_orange">'+
             '    <div class="col-1" style="display: none" ><span><input style="display: none" type="text" name="id[]" value="-1"></span></div>'+
             '    <div class="col-12 col-sm-3"><input type="text" name="name[]" placeholder="書櫃碼" maxlength="20"  value="'+name+'"> <\/div>'+
             '    <div class="col-12 col-sm-2"><input type="text" name="note[]" placeholder="備註" maxlength="30"> </div>'+
-            '    <div class="col-12 col-sm-1"><input type="number" min="0" name="top[]"  placeholder="Top" value="'+top+'"> <\/div>'+
-            '    <div class="col-12 col-sm-1"><input type="number" min="0" name="left[]" placeholder="Left" value="'+left+'"> <\/div>'+
-            '    <div class="col-12 col-sm-1"><input type="number" min="1" name="height[]" placeholder="Height" value="'+height+'"> <\/div>'+
-            '    <div class="col-12 col-sm-1"><input type="number" min="1" name="width[]" placeholder="Width" value="'+width+'"> <\/div>'+
+            '    <div class="col-12 col-sm-1"><input type="number" name="top[]"  placeholder="Top" value="'+top+'"> <\/div>'+
+            '    <div class="col-12 col-sm-1"><input type="number" name="left[]" placeholder="Left" value="'+left+'"> <\/div>'+
+            '    <div class="col-12 col-sm-1"><input type="number" name="height[]" placeholder="Height" value="'+height+'"> <\/div>'+
+            '    <div class="col-12 col-sm-1"><input type="number" name="width[]" placeholder="Width" value="'+width+'"> <\/div>'+
             '    <div class="col-12 col-sm-1"><input type="number" step="5" min="-360" max="360" name="rotate[]" placeholder="Rotate" value="0"> </div>'+
             '    <div class="col-12 col-sm-2"><button type="button" class="destoryinputGP">刪除</button></div>'+
             '</div>'
@@ -422,6 +423,8 @@ $(document).ready(function() {
             this.value = userInput;
             var index=$('#designinput .inputdivGP input[name="rotate[]').index(this);
             $($('.designblock .draggable')[index]).css('rotate',(userInput)+'deg');
+            $($($('.designblock .draggable')[index]).find('.text')).css('rotate',-1*userInput+'deg')
+
             $('.diagram_info input[name="rotate"]').val(userInput);  //改變輔助框input
         });
         $('input[name="rotate[]"]').on('change', function() {
@@ -551,6 +554,7 @@ $(document).ready(function() {
 
                 $($('.inputdivGP input[name="rotate[]"]')[t_index]).val(userInput);
                 $(select_element).css('rotate', userInput+'deg');
+                $($(select_element).find('.text')).css('rotate',-1*userInput+'deg')
 
 
 

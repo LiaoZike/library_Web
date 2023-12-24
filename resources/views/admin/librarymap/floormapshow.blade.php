@@ -1,23 +1,13 @@
+<link rel="stylesheet" href="{{asset('admin_css/shared.css')}}">
 <div class="container-fluid">
-    <a href="{{route('admin.librarymap.floormap',$id)}}" class="editBtn"><i class="fa fa-window-close-o" aria-hidden="true"></i>
+    <a href="{{route('admin.librarymap.floormap',$id)}}" class="editBtn"><i class="fa fa-times" aria-hidden="true"></i>
         點我關閉編輯模式</a>
 </div>
 <style>
     .editBtn{
-        width: 100%;
-        display: block;
-        cursor: pointer;
-        text-align: center;
-        padding: 1px 0px;
-        font-size: 20px;
-        border: 2px solid black;
-        border-radius: 10px;
         background-color: #febdbd;
-        color:black;
-        transition: background .2s;
     }
     .editBtn:hover{
-        color:black;
         background-color: #f88e8e;
     }
 </style>
@@ -77,7 +67,7 @@
                 <div class="col-12 col-sm-2">櫃數</div>
             </div>
             @foreach($floors as $floor)
-                <a href="{{route("admin.librarymap.floormapedit",$floor->id)}}" class="row floor"  @if($floor->id==$id) style="background-color: rgba(0,105,255,0.89)" @endif>
+                <a href="{{route("admin.librarymap.floormapedit",$floor->id)}}" class="row floor"  @if($floor->id==$id) style="background-color: #a47878" @endif>
                     <div class="col-12 col-sm-2 floor_ord">{{$floor->ord}}</div>
                     <div class="col-12 col-sm-4 floor_name">{{$floor->name}}</div>
                     <div class="col-12 col-sm-4">{{$floor->note}}</div>
@@ -100,7 +90,7 @@
                 <div class="row  mx-1" id="designsize">
                     寬:&nbsp;&nbsp;<input class="col-11" type="number" value="{{$deswidth}}" name="designsize_W" min=0 max=2000 placeholder="寬度(px)">
                 </div>
-                <div class="row title pt-1 mt-3">
+                <div class="row title pt-1 mt-3 mx-1">
 {{--                    <div class="col-1">ID</div>--}}
                     <div class="col-3">書櫃碼</div>
                     <div class="col-2">書櫃備註</div>
@@ -111,16 +101,16 @@
                     <div class="col-1">旋轉</div>
                     <div class="col-2">功能</div>
                 </div>
-                <div class="inputdivGP">
+                <div class="inputdivGP userscrollbar mx-1">
                     @foreach($floormaps as $floormap)
                         <div class="row inputGP">
                             <div class="col-1" style="display: none" ><span><input style="display: none" type="text" name="id[]" value="{{$floormap->id}}"></span></div>
                             <div class="col-12 col-sm-3"><input type="text" name="name[]" placeholder="書櫃碼" maxlength="20" value="{{$floormap->bookcaseName}}"> </div>
                             <div class="col-12 col-sm-2"><input type="text" name="note[]" placeholder="備註" maxlength="30" value="{{$floormap->bookcaseNote}}"> </div>
-                            <div class="col-12 col-sm-1"><input type="number" min="0" name="top[]" placeholder="Top" value="{{$floormap->top}}"> </div>
-                            <div class="col-12 col-sm-1"><input type="number" min="0" name="left[]" placeholder="Left" value="{{$floormap->left}}"> </div>
-                            <div class="col-12 col-sm-1"><input type="number" min="1" name="height[]" placeholder="Height" value="{{$floormap->height}}"> </div>
-                            <div class="col-12 col-sm-1"><input type="number" min="1" name="width[]" placeholder="Width" value="{{$floormap->width}}"> </div>
+                            <div class="col-12 col-sm-1"><input type="number" name="top[]" placeholder="Top" value="{{$floormap->top}}"> </div>
+                            <div class="col-12 col-sm-1"><input type="number" name="left[]" placeholder="Left" value="{{$floormap->left}}"> </div>
+                            <div class="col-12 col-sm-1"><input type="number" name="height[]" placeholder="Height" value="{{$floormap->height}}"> </div>
+                            <div class="col-12 col-sm-1"><input type="number" name="width[]" placeholder="Width" value="{{$floormap->width}}"> </div>
                             <div class="col-12 col-sm-1"><input type="number" step="5" min="-360" max="360" name="rotate[]" placeholder="Rotate" value="{{$floormap->rotate}}"> </div>
                             <div class="col-12 col-sm-2"><button type="button" class="destoryinputGP">刪除</button></div>
                         </div>
@@ -134,7 +124,7 @@
             @foreach($floormaps as $floormap)
             <div class="draggable hidedraggable" style="rotate:{{$floormap->rotate}}deg; width:{{$floormap->width}}px;height: {{$floormap->height}}px;top:{{$floormap->top}}px;left:{{$floormap->left}}px;">
                     <div class="routebtn"><i class="fa fa-repeat" aria-hidden="true"></i></div>
-                    <div class="text">{{$floormap->bookcaseName}}</div>
+                    <div class="text" style="rotate:-{{$floormap->rotate}}deg;">{{$floormap->bookcaseName}}</div>
                     <div class="resizable-handle"></div>
             </div>
             @endforeach

@@ -15,14 +15,26 @@ function confirmSubmit() {
 }
 
 $(document).ready(function() {
-    $('#sortable-list').sortable({
-        axis: 'y',
-        cursor: 'grabbing',
-        update: function (event, ui) {
+    sortableList=document.getElementById("sortable-list");
+    new Sortable(sortableList, {
+        animation: 200, // 動畫時間，以毫秒為單位
+        ghostClass: 'bck_ffd180',
+        onEnd: function (/**Event*/ evt) {
             updateOrder(); // 移除後更新所有欄位的順序值
-
         }
     });
+    //
+    // $('#sortable-list').sortable({
+    //
+    //     handle: '.handle',
+    //     invertSwap: true,
+    //     // axis: 'y',
+    //     // cursor: 'grabbing',
+    //     // update: function (event, ui) {
+    //     //     updateOrder(); // 移除後更新所有欄位的順序值
+    //     //
+    //     // }
+    // });
     // $('#sortable-list').disableSelection();
 
     flash_move();
@@ -35,6 +47,7 @@ $(document).ready(function() {
         $('#floorFields .flooritem').each(function(index) {
             var newIndex = totalItems - index;
             $(this).find('input[name="ord[]"]').val(newIndex);
+            $(this).css('transform', 'translateY(0px)');
         });
     }
 
@@ -78,15 +91,62 @@ $(document).ready(function() {
         // 上移按鈕點擊事件
         $('.move-up').on('click',function() {
             var row = $(this).closest('.flooritem');
-            row.insertBefore(row.prev());
-            updateOrder(); // 移除後更新所有欄位的順序值
+            var position = row.index(); // 獲取此元素在 sortable-list 中的索引位置
+            var prevrow=row.prev('.flooritem');
+            if(position>0) {
+                var moveheight = parseInt($(row).css('height'), 10)
+                $(row).css('transform','translateY('+-1*moveheight+'px)');
+
+                if (prevrow.length) {
+                    var moveheight2 = parseInt($(prevrow).css('height'), 10)
+                    $(prevrow).css('transform','translateY('+moveheight2+'px)');
+                }
+                setTimeout(function () {
+                    $('.flooritem').css('transition', 'none'); // 取消過渡效果
+                    $(row).css('transform', 'translateY(0px)');
+                    if (prevrow.length) {
+                        $(prevrow).css('transform', 'translateY(0px)');
+                    }
+                    row.insertBefore(row.prev());
+                    updateOrder(); // 移除後更新所有欄位的順序值
+                    $('.flooritem').css('transition', 'transform .5s'); // 取消過渡效果
+
+                }, 500)
+            }
         });
 
         // 下移按鈕點擊事件
         $('.move-down').on('click',function() {
+            var floorItems = document.querySelectorAll('.flooritems .flooritem');
+            var floorItemsSize = floorItems.length;
+
             var row = $(this).closest('.flooritem');
-            row.insertAfter(row.next());
-            updateOrder(); // 移除後更新所有欄位的順序值
+            var position = row.index();
+            var nextrow=row.next('.flooritem');
+            if(position<floorItemsSize-1){
+                var moveheight=parseInt($(row).css('height'),10)
+                $(row).css('transform','translateY('+moveheight+'px)');
+
+
+                if (nextrow.length) {
+                    var moveheight2 = parseInt($(nextrow).css('height'), 10)
+                    $(nextrow).css('transform','translateY('+-1*moveheight2+'px)');
+                }
+                setTimeout(function () {
+                    $('.flooritem').css('transition', 'none'); // 取消過渡效果
+                    $(row).css('transform', 'translateY(0px)');
+                    if (nextrow.length) {
+                        $(nextrow).css('transform', 'translateY(0px)');
+                    }
+                    row.insertAfter(row.next());
+                    updateOrder(); // 移除後更新所有欄位的順序值
+                    $('.flooritem').css('transition', 'transform .5s'); // 取消過渡效果
+
+                }, 500)
+
+
+            }
+
         });
     }
     $('#modalBg').on('click',function(event) {

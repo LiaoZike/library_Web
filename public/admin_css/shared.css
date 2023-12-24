@@ -1,0 +1,75 @@
+.editBtn{
+    width: 100%;
+    display: block;
+    cursor: pointer;
+    text-align: center;
+    padding: 1px 0px;
+    font-size: 20px;
+    border: 2px solid black;
+    border-radius: 10px;
+    color:black;
+    transition: background .2s;
+}
+.editBtn:hover{
+    color:black;
+}
+
+.floor_name{
+    background-color: rgba(221, 191, 158, 0.8);
+    border-radius: 5px;
+}
+.floor_ord{
+    background-color: rgba(181, 181, 181, 0.25);
+    border-radius: 500px;
+    text-align: center;
+}
+
+.floor:hover{
+    color:black;
+    background-color: rgba(139, 139, 139, 0.62);
+    transition:  background-color .3s;
+}
+
+
+
+
+/************************/
+/**       滾動條       **/
+/************************/
+body::-webkit-scrollbar {  /* 設定滾動條寬度 */
+    width: 8px; /* 左邊可以 上下的滾動條 長度 */
+    height: 8px; /* 下面可以 左右的滾動條 長度 */
+    /*background-color: #f5f5f5; /* 設定滾動條的顏色 */
+}
+
+body::-webkit-scrollbar-thumb { /* 設定滾動條顏色/圓角 */
+    background-color: #969695;
+    border-radius: 4px;
+}
+
+body::-webkit-scrollbar-thumb:hover { /* 設定滾動條移過去的顏色 */
+    background-color: #1f1f20bd;
+}
+
+body::-webkit-scrollbar-track { /* 設定滾動條軌道的顏色 */
+    background-color: rgb(234, 234, 234);
+}
+
+.userscrollbar::-webkit-scrollbar {  /* 設定滾動條寬度 */
+    width: 8px; /* 左邊可以 上下的滾動條 長度 */
+    height: 8px; /* 下面可以 左右的滾動條 長度 */
+    /*background-color: #f5f5f5; /* 設定滾動條的顏色 */
+}
+
+.userscrollbar::-webkit-scrollbar-thumb { /* 設定滾動條顏色/圓角 */
+    background-color: #969695;
+    border-radius: 4px;
+}
+
+.userscrollbar::-webkit-scrollbar-thumb:hover { /* 設定滾動條移過去的顏色 */
+    background-color: #1f1f20bd;
+}
+
+.userscrollbar::-webkit-scrollbar-track { /* 設定滾動條軌道的顏色 */
+    background-color: rgb(234, 234, 234);
+}
