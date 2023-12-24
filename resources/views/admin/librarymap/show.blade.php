@@ -37,10 +37,19 @@
                         <!-- 初始的一組輸入欄位 -->
                         @foreach($floors as $floor)
                             <div class="row flooritem" draggable="true">
-                                <div style="display:none"><input type="text" name="id[]" value="{{$floor->id}}" min="1" readonly tabindex="-1"></div>
-                                <div class="col-12 col-sm-1 readonly"><input type="text" name="ord[]" value="{{$floor->ord}}" min="1" readonly tabindex="-1"></div>
-                                <div class="col-12 col-sm-3"><input type="text" name="name[]"  placeholder="樓層" value="{{$floor->name}}"></div>
-                                <div class="col-12 col-sm-3"><input type="text" name="note[]" placeholder="備註" value="{{$floor->note}}"></div>
+                                <div style="display:none"><label for="floorId">Floor ID</label><input type="text" name="id[]" value="{{$floor->id}}" min="1" readonly tabindex="-1"></div>
+                                <div class="col-12 col-sm-1 readonly">
+                                    <label for="floorId" style="display:none">樓層順序</label>
+                                    <input type="text" name="ord[]" value="{{$floor->ord}}" min="1" readonly tabindex="-1">
+                                </div>
+                                <div class="col-12 col-sm-3">
+                                    <label for="floorId" style="display:none">樓層名稱</label>
+                                    <input type="text" name="name[]"  placeholder="樓層" value="{{$floor->name}}">
+                                </div>
+                                <div class="col-12 col-sm-3">
+                                    <label for="floorId" style="display:none">樓層備註</label>
+                                    <input type="text" name="note[]" placeholder="備註" value="{{$floor->note}}">
+                                </div>
                                 <div class="col-12 col-sm-1">{{$floor->count}}</div>
                                 <div class="col-12 col-sm-2"><button type="button" class="remove-floor">刪除</button></div>
 
