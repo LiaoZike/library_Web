@@ -148,5 +148,6 @@ body::-webkit-scrollbar-track { /* 設定滾動條軌道的顏色 */
 
 
 .book_notice_red{
-    background-color: #ff7272 !important;
+    /*background-color: #ff7272 !important;*/
+    background-color: #ff4545 !important;
 }

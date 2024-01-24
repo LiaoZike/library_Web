@@ -18,7 +18,7 @@
                     <div class="col-12 col-sm-2 floor_ord">{{$floor->ord}}</div>
                     <div class="col-12 col-sm-4 floor_name">{{$floor->name}}</div>
                     <div class="col-12 col-sm-4">{{$floor->note}}</div>
-                    <div class="col-12 col-sm-2">{{$floor->sizeofobj}}</div>
+                    <div class="col-12 col-sm-2">{{$floor->maps_count}}</div>
                 </a>
             @endforeach
         </div>
@@ -46,7 +46,7 @@
     #contentFrameWrapper {
         position: fixed;
         top: 0;
-        left: 0;
+        right: 0;
         width: 100%;
         height: 100%;
 
@@ -57,14 +57,14 @@
         z-index: 99999;
     }
 
-    #contentFrame {
-
+    #contentFrame{
         width: 80%; /* iframe 寬度 */
         height: 80%; /* iframe 高度 */
         border: none;
         background-color: white;
-        transform:translateY(-200%);
-        transition: all .2s ease-in-out; /* 動畫效果 */
+        transition: all .1s ease-in-out; /* 動畫效果 */
+        user-select: none;
+        transform: translateX(-100%);
     }
 </style>
 <div class="mb-5">說明...</div>
@@ -77,7 +77,7 @@
             console.log('{{ route('admin.librarymap.bookcaseedit', '') }}' + '/' + getId);
             $('#contentFrameWrapper').css('display', 'flex');
             setTimeout(function (){
-                $('#contentFrame').css('transform', 'translateY(0)');
+                $('#contentFrame').css('transform', 'translateX(0)');
             },10)
             $('#contentFrame').attr('src', '{{ route('admin.librarymap.bookcaseedit', '') }}' + '/' + getId);
         });
@@ -86,8 +86,8 @@
         $('#contentFrameWrapper').click(function () {
             setTimeout(function (){
                 $('#contentFrameWrapper').css('display', 'none');
-            },200);
-            $('#contentFrame').css('transform', 'translateY(-100%)');
+            },100);
+            $('#contentFrame').css('transform', 'translateX(-100%)');
         });
     });
 </script>

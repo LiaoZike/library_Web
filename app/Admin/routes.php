@@ -31,5 +31,6 @@ Route::group([
 
     ///書櫃詳細編輯
     $router->get('/librarymap/bookcase/{floormapid}', 'LibraryMapController@bookcaseedit')->name('librarymap.bookcaseedit');
+    $router->post('/librarymap/bookcase/{floormapid}', 'LibraryMapController@bookcaseeditsave')->name('librarymap.bookcaseeditsave');
 
 });

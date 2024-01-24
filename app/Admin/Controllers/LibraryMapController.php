@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Admin\Controllers;
+use App\Models\BookCaseNo;
 use Encore\Admin\Admin;
 
 use App\Http\Controllers\Controller;
@@ -22,17 +23,7 @@ class LibraryMapController extends Controller{
     /*********  圖書館樓層顯示/處理  ********/
     /************************************/
     public function floor(Content $content){//顯示樓層頁面
-        $floors=Floor::orderBy('ord','desc')->get();
-        if (!empty($floors)) {
-            for ($i = 0; $i < sizeof($floors); $i++) {
-                $floorcount=FloorMap::where('linkid','=',$floors[$i]->id)->get();
-                if (empty($floors)) {
-                    $floors[$i]->count=0;
-                }else{
-                    $floors[$i]->count=count($floorcount);
-                }
-            }
-        }
+        $floors = Floor::withCount('maps')->orderBy('ord', 'desc')->get(); //計算幾個關聯
         $data=[
             'floors'=>$floors,
         ];
@@ -44,19 +35,7 @@ class LibraryMapController extends Controller{
     //顯示編輯樓層頁面
     public function flooredit(Content $content){
             (new \Encore\Admin\Admin)->disablePjax();
-        $floors = Floor::orderBy('ord','desc')->get();
-
-        if (!empty($floors)) {
-            for ($i = 0; $i < sizeof($floors); $i++) {
-                $floorcount=FloorMap::where('linkid','=',$floors[$i]->id)->get();
-                if (empty($floors)) {
-                    $floors[$i]->count=0;
-                }else{
-                    $floors[$i]->count=count($floorcount);
-                }
-            }
-        }
-
+        $floors = Floor::withCount('maps')->orderBy('ord', 'desc')->get(); //計算幾個關聯
         $data=[
             'floors'=>$floors,
         ];
@@ -67,54 +46,50 @@ class LibraryMapController extends Controller{
     }
     //儲存編輯樓層
     public function flooreditsave(Request $request){
-        $db_floors=Floor::all();
-        $ids = [];
-        foreach ($db_floors as $floor) {
-            $ids[] = $floor->id;
-        }
-        $idArray = $request->input('id');
-        $ordArray = $request->input('ord');
-        $nameArray = $request->input('name');
-        $noteArray = $request->input('note');
-
-        if (!empty($idArray) && !empty($ordArray) && !empty($nameArray) && !empty($noteArray)) {
-            if (count($idArray) != count($ordArray) || count($ordArray) != count($nameArray) || count($nameArray) != count($noteArray)) {
-                abort(404);
-            }
-        }
-        // 組合每一行的資料
-        if (!empty($idArray)) {
-            for ($i=0;$i<count($idArray);$i++){
-                $data= [
-                    'ord' => (int)$ordArray[$i] ?: 0,
-                    'name' => $nameArray[$i]?: '未命名樓層',
-                    'note' => $noteArray[$i]?: '無備註',
-                ];
-                $temp=Floor::find((int)$idArray[$i]);
-                if($temp==null||$idArray[$i]==-1){
-                    //找不到要新增
-                    Floor::create($data);
-                }else{
-                    $temp->update($data);
+                $db_floors=Floor::all();
+                $ids = [];
+                foreach ($db_floors as $floor) {
+                    $ids[] = $floor->id;
                 }
-                for($j=0;$j<count($ids);$j++){
-                    if($ids[$j]==(int)$idArray[$i]){
-                        $ids[$j]=-1;
+                $idArray = $request->input('id');
+                $ordArray = $request->input('ord');
+                $nameArray = $request->input('name');
+                $noteArray = $request->input('note');
+
+                if (!empty($idArray) && !empty($ordArray) && !empty($nameArray) && !empty($noteArray)) {
+                    if (count($idArray) != count($ordArray) || count($ordArray) != count($nameArray) || count($nameArray) != count($noteArray)) {
+                        abort(404);
                     }
                 }
-            }
-        }
-        for($i=0;$i<sizeof($ids);$i++){
-            if($ids[$i]!=-1){ //刪除沒有送來的ID
-                $floormaps_deldatas=FloorMap::where('linkid','=',$ids[$i])->get();
-                foreach ($floormaps_deldatas as $floormaps_deldata){
-                    FloorMap::destroy($floormaps_deldata['id']);
+                // 組合每一行的資料
+                if (!empty($idArray)) {
+                    for ($i=0;$i<count($idArray);$i++){
+                        $data= [
+                            'ord' => (int)$ordArray[$i] ?: 0,
+                            'name' => $nameArray[$i]?: '未命名樓層',
+                            'note' => $noteArray[$i]?: '無備註',
+                        ];
+                        $temp=Floor::find((int)$idArray[$i]);
+                        if($temp==null||$idArray[$i]==-1){
+                            //找不到要新增
+                            Floor::create($data);
+                        }else{
+                            $temp->update($data);
+                        }
+                        for($j=0;$j<count($ids);$j++){
+                            if($ids[$j]==(int)$idArray[$i]){
+                                $ids[$j]=-1;
+                            }
+                        }
+                    }
                 }
-                Floor::destroy($ids[$i]);
-            }
-        }
-        admin_toastr('儲存成功', 'success');
-        return redirect()->route("admin.librarymap.flooredit");
+                for($i=0;$i<sizeof($ids);$i++){
+                    if($ids[$i]!=-1){ //刪除沒有送來的ID
+                        Floor::destroy($ids[$i]);
+                    }
+                }
+                admin_toastr('儲存成功', 'success');
+                return redirect()->route("admin.librarymap.flooredit");
     }
 
 
@@ -129,21 +104,10 @@ class LibraryMapController extends Controller{
         if($checks==null){
             abort(404);
         }
-        $floors=Floor::orderBy('ord','desc')->get();
-
-        if(!empty($floors)){ //計算櫃數
-            for($i=0;$i<sizeof($floors);$i++){
-                $maps=FloorMap::where('linkid','=',$floors[$i]->id)->get();
-                if(!empty($maps)) {
-                    $floors[$i]->sizeofobj=count($maps);
-                }else{
-                    $floors[$i]->sizeofobj=0;
-                }
-            }
-        }
+        $floors=Floor::withCount('maps')->orderBy('ord','desc')->get(); //計算幾個關聯
         $desheight=Floor::find($floorid)->desheight; //設計框高度
         $deswidth=Floor::find($floorid)->deswidth; //設計框寬度
-        $floormaps=FloorMap::where('linkid','=',$floorid)->get(); //該樓層所有書櫃
+        $floormaps=Floor::find($floorid)->maps; //該樓層所有書櫃
         $data=[
             'id'=>$id,
             'floors'=>$floors,
@@ -162,20 +126,10 @@ class LibraryMapController extends Controller{
         (new \Encore\Admin\Admin)->disablePjax();
         $id=$floorid;
         $checks=Floor::find($floorid);
-        $floors=Floor::orderBy('ord','desc')->get();
-        if(!empty($floors)){ //計算櫃數
-            for($i=0;$i<sizeof($floors);$i++){
-                $maps=FloorMap::where('linkid','=',$floors[$i]->id)->get();
-                if(!empty($maps)) {
-                    $floors[$i]->sizeofobj=count($maps);
-                }else{
-                    $floors[$i]->sizeofobj=0;
-                }
-            }
-        }
+        $floors=Floor::withCount('maps')->orderBy('ord','desc')->get(); //計算幾個關聯
         $desheight=Floor::find($floorid)->desheight;
         $deswidth=Floor::find($floorid)->deswidth;
-        $floormaps=FloorMap::where('linkid','=',$floorid)->get();
+        $floormaps=Floor::find($floorid)->maps;
         $data=[
             'id'=>$id,
             'floors'=>$floors,
@@ -195,7 +149,7 @@ class LibraryMapController extends Controller{
             'desheight'=>(int)$request->all()['designsize_H'],
             'deswidth'=>(int)$request->all()['designsize_W']
         ]);
-        $db_floormaps=FloorMap::where('linkid','=',$floorid)->get();
+        $db_floormaps=Floor::find($floorid)->maps;
         $ids = [];
         foreach ($db_floormaps as $maps) {
             $ids[] = $maps->id;
@@ -226,7 +180,7 @@ class LibraryMapController extends Controller{
                     continue;
                 }
                 $data = [
-                    'linkid' => $floorid,
+                    'store_id' =>  (int)$floorid,
                     'bookcaseName' => $nameArray[$i] ?: '未命名書櫃',
                     'bookcaseNote' => $noteArray[$i] ?: '無備註',
                     'top' => (int)$topArray[$i] ?: '0',
@@ -263,11 +217,47 @@ class LibraryMapController extends Controller{
     /***********  書櫃顯示/處理  **********/
     /************************************/
     //顯示樓層書櫃頁面
-    public function bookcaseedit($floorid){
+    public function bookcaseedit($floormapid){
+        $floormap=FloorMap::find($floormapid);
         $data=[
-            'floorid'=>$floorid
+            'floormapid'=>$floormapid,
+            'bookcaseName'=>$floormap->bookcaseName,
+            'bookcaseNote'=>$floormap->bookcaseNote,
+            'severalrows'=>$floormap->severalrows,
+            'severalcols'=>$floormap->severalcols
         ];
         return view("admin.librarymap.bookcaseindex",$data);
     }
+    public function bookcaseeditsave(Request $request){
+        $data=$request->all();
+        // 檢查 id 是否為陣列
+        if (is_array($data['id'])) {
+            foreach ($data['id'] as $index => $id) {
+                // 檢查每筆資料的 id 是否為 -1
+                if ($id == -1) {
+                    // 如果 id 為 -1，表示要新增資料
+                    $bookCaseNo = new BookCaseNo();
+                } else {
+                    // 如果 id 不為 -1，表示要更新資料，先找到對應的資料
+                    $bookCaseNo = BookCaseNo::find($id);
 
+                    // 檢查是否找到對應的資料
+                    if (!$bookCaseNo) {
+                        return response()->json(['message' => '找不到對應的資料'], 404);
+                    }
+                }
+
+                // 將資料填入模型
+                $bookCaseNo->link_id = $data['link_id'];
+                $bookCaseNo->ord = $data['ord'][$index];
+                $bookCaseNo->startnum = isset($data['startnum'][$index]) ? $data['startnum'][$index] : "";
+                $bookCaseNo->endnum = $data['endnum'][$index] ? $data['endnum'][$index] : "";
+                // 儲存資料
+                $bookCaseNo->save();
+            }
+
+        }
+
+        return redirect()->route('admin.librarymap.bookcaseedit',$data['link_id']);
+    }
 }

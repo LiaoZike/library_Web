@@ -20,7 +20,7 @@
                     <div class="col-12 col-sm-1"> </div>
                     <div class="col-12 col-sm-4 floor_name">{{$floor->name}}</div>
                     <div class="col-12 col-sm-4">{{$floor->note}}</div>
-                    <div class="col-12 col-sm-2">{{$floor->count}}</div>
+                    <div class="col-12 col-sm-2">{{$floor->maps_count}}</div>
                 </a>
             @endforeach
 

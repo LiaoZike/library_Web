@@ -71,7 +71,7 @@
                     <div class="col-12 col-sm-2 floor_ord">{{$floor->ord}}</div>
                     <div class="col-12 col-sm-4 floor_name">{{$floor->name}}</div>
                     <div class="col-12 col-sm-4">{{$floor->note}}</div>
-                    <div class="col-12 col-sm-2">{{$floor->sizeofobj}}</div>
+                    <div class="col-12 col-sm-2">{{$floor->maps_count}}</div>
                 </a>
             @endforeach
         </div>

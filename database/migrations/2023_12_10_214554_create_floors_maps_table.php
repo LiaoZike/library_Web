@@ -9,11 +9,9 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void{ //書櫃擺放
         Schema::create('floors_maps', function (Blueprint $table) {
             $table->id(); //固定id
-            $table->integer("linkid"); //連結樓層的id
             $table->string("bookcaseName"); //書櫃編碼
             $table->string("bookcaseNote")->nullable(); //書櫃備註
             $table->integer("top")->default(0); //Top
@@ -21,6 +19,9 @@ return new class extends Migration
             $table->integer("height")->default(0); //高度
             $table->integer("width")->default(0); //寬度
             $table->integer("rotate")->default(0); //寬度
+            $table->integer("severalrows")->default(5); //書櫃有幾格5*4(5個row)
+            $table->integer("severalcols")->default(4); //書櫃有幾格5*4(4個col)
+
             $table->timestamps();
         });
     }

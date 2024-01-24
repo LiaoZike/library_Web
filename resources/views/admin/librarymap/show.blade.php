@@ -50,7 +50,7 @@
                                     <label for="floorId" style="display:none">樓層備註</label>
                                     <input type="text" name="note[]" placeholder="備註" value="{{$floor->note}}">
                                 </div>
-                                <div class="col-12 col-sm-1">{{$floor->count}}</div>
+                                <div class="col-12 col-sm-1">{{$floor->maps_count}}</div>
                                 <div class="col-12 col-sm-2"><button type="button" class="remove-floor">刪除</button></div>
 
                                 <!-- 上移按鈕  -->
