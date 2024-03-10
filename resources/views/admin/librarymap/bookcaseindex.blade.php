@@ -1,7 +1,13 @@
 <link rel="stylesheet" href="{{asset('vendor\laravel-admin\font-awesome\css\font-awesome.min.css')}}">
 <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
-
 <div class="ifcontent container-fluid">
+    @if(session('success'))
+        <div id="success-message" class="success-message">
+            <i class="fa fa-check" aria-hidden="true"></i>
+            {{ session('success') }}
+        </div>
+    @endif
+
     <form action="{{route('admin.librarymap.bookcaseeditsave',$floormapid)}}" method="POST" id="numbersetform">
         @csrf()
         <div class="row">
@@ -36,15 +42,16 @@
                 @for($j=0;$j<$severalcols;$j++)
                     <div class="BlockCol">
                         <div class="NumberBlock">
-                            <input type="number" name="id[]" value="-1"  style="display: none"/>
-                            <input style="width: 30%;" type="text" name="ord[]" value="{{$j*$severalrows+$i+1}}"/>
+                            <input type="number" name="id[]" value="{{ isset($BookCaseNos[$j * $severalrows + $i + 1]) ? $BookCaseNos[$j * $severalrows + $i + 1]->id : -1}}"  style="display: none"/>
+                            <input style="width: 30%;display: none;" type="text" name="ord[]" value="{{$j*$severalrows+$i+1}}">
+                            <div  class="showord" style="text-align: center">{{$j*$severalrows+$i+1}}</div>
                             <div class="StartNumber">
                                 <label>起始編碼</label>
-                                <input style="width: 95%;" type="text" name="startnum[]" placeholder="xxx xxxx xxxx"/>
+                                <input style="width: 95%;" value="{{isset($BookCaseNos[$j * $severalrows + $i + 1]) ? $BookCaseNos[$j * $severalrows + $i + 1]->startnum : ""}}" type="text" name="startnum[]" placeholder="xxx xxxx xxxx"/>
                             </div>
                             <div class="StartNumber">
                                 <label>結束編碼</label>
-                                <input style="width: 95%;" type="text" name="endnum[]" placeholder="xxx xxxx xxxx"/>
+                                <input style="width: 95%;" value="{{isset($BookCaseNos[$j * $severalrows + $i + 1]) ? $BookCaseNos[$j * $severalrows + $i + 1]->endnum : ""}}" type="text" name="endnum[]" placeholder="xxx xxxx xxxx"/>
                             </div>
                         </div>
                     </div>
@@ -80,13 +87,20 @@
         .BlockCol{
             width: 170px;
             display: inline-block;
+            white-space:normal ; /* 防止換行 */
+
         }
         #FormBlock{
-            margin: 10px;
+            background: url({{asset('image/wood.jpeg')}});
+            background-repeat:repeat;
+            padding: 5px 5px 5px 10px;
+            width: 100%;
+            margin-top: 5px;
+            overflow-x: auto; /* 啟用橫向捲動條 */
+            overflow-y: hidden; /* 禁用垂直捲動條 */
+            white-space: nowrap; /* 防止換行 */
         }
         .submit{
-            position: absolute;
-            right: 0;
             margin-left: auto;
             width: 130px;
             padding: 8px 10px;
@@ -100,8 +114,29 @@
             background-color: #0b5ed7;
             transition: all .35s;
         }
+
+        /* 儲存成功通知 */
+        .success-message {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 30px;
+            position: fixed;
+            border-radius: 5px;
+            top: 5px;
+            right: 0;
+            transform: translateX(-50%);
+            z-index: 9999;
+            animation: hideMessage 6s forwards;
+        }
+        /* Optional: Add animation for hiding */
+        @keyframes hideMessage {
+            0% { opacity: 0; }
+            5% {opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
     </style>
     <script src="{{asset('js/jquery-3.7.1.min.js')}}"></script>
+
     <script>
         function updateord() {
             // 遍歷每個 .BlockRow
@@ -110,6 +145,7 @@
                 $(this).find('.BlockCol').each(function(colIndex) {
                     var newValue = colIndex*$('#FormBlock .BlockRow').length+rowIndex+1
                     $(this).find('input[name^="ord"]').val(newValue);
+                    $(this).find('.showord').text(newValue);
                 });
             });
         }
@@ -139,7 +175,8 @@
                                 '<div class="BlockCol"> '+
                                 '    <div class="NumberBlock"> '+
                                 '   <input type="number" name="id[]" value="-1"  style="display: none"\/> '+
-                                '        <input style="width: 30%;" type="text" name="ord[]" value="-1"\/> '+
+                                '        <input style="width: 30%;display:none" type="text" name="ord[]" value="-1"\/> '+
+                                '        <div class="showord" style="text-align: center">-1<\/div>'+
                                 '        <div class="StartNumber"> '+
                                 '            <label>起始編碼<\/label> '+
                                 '            <input style="width: 95%;" type="text" name="startnum[]" placeholder="xxx xxxx xxxx"\/> '+
@@ -185,7 +222,8 @@
                             newCol+='<div class="BlockCol"> '+
                                     '    <div class="NumberBlock"> '+
                                     '   <input type="number" name="id[]" value="-1"  style="display: none"\/> '+
-                                    '        <input style="width: 30%;" type="text" name="ord[]" value="-1"\/> '+
+                                    '        <input style="width: 30%;display:none" type="text" name="ord[]" value="-1"\/> '+
+                                    '        <div class="showord" style="text-align: center">-1<\/div>'+
                                     '        <div class="StartNumber"> '+
                                     '            <label>起始編碼<\/label> '+
                                     '            <input style="width: 95%;" type="text" name="startnum[]" placeholder="xxx xxxx xxxx"\/> '+

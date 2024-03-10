@@ -1,0 +1,340 @@
+
+.border{
+    position: absolute;
+    border: 3px red solid !important;
+    /*background-color: red;*/
+    top: 0;
+    left: -500px;
+    height: 0;
+    width: 0;
+}
+
+.imagerow{
+    position: relative;
+}
+.imagerow img{
+    width: 1024px;
+    height: 768px;
+}
+.slides{
+    width: 1024px;
+    height: 768px;
+}
+#slider1_container{
+    width: 1024px;
+    height: 768px;
+}
+a{
+    background-color: #FFF;
+    padding: 5px 0;
+    color:black;
+    text-align: center !important;
+    text-decoration: none !important;
+}
+a:hover{
+    background-color: rgba(13, 110, 253, 0.44);
+    transition: background-color .3s;
+}
+.block_hidden{
+    flex: 1;
+    padding: 5px;
+    margin:1px;
+    box-sizing: border-box;
+    text-align: center;
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    display: none;
+}
+
+.bck_red, .bck_green, .bck_orange{
+    position: relative;
+    min-height: 400px;
+}
+.bck_green:hover ,.bck_orange:hover, .bck_red:hover{
+    scale: 1.03;
+}
+.bck_red:after, .bck_green:after, .bck_orange:after{
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 100%;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    opacity: 0.9;
+}
+.bck_red:after{
+    background-color: rgba(255, 0, 0, 0.25) !important;
+    outline:3px #ff0000 solid;
+}
+.bck_green:after{
+    background-color: rgba(0, 255, 17, 0.4) !important;
+    outline:3px #144c03 solid;
+}
+.bck_orange:after{
+    background-color: rgba(238, 255, 0, 0.25) !important;
+    outline:3px #aa4400 solid;
+}
+
+.my_gray{
+    background-color: grey;
+    outline:3px #ff0000 solid;
+    min-height: 400px;
+    cursor: default !important;
+}
+.my_black{
+    background-color: black !important;
+    outline:3px #5e5e5e solid;
+    min-height: 400px;
+    cursor: none !important;
+}
+.DB_black{
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0);
+    outline:3px #aa4400 solid !important;
+}
+.DB_orange{
+    background-color: rgba(0, 0, 0, 0.29);
+    outline:3px #818181 solid !important;
+}
+.DB_gray{
+    background-color: grey;
+    outline:3px #ff0000 solid !important;
+}
+.my_orange{
+    background-color: rgba(0, 0, 0, 0);
+    outline:3px #aa4400 solid !important;
+    min-height: 500px;
+    cursor: default !important;
+
+}
+
+body{
+    font-family: arial,"Microsoft JhengHei","微軟正黑體",sans-serif !important;
+    margin: 0;
+}
+.times,.floorName,.bookcaseName,.bookcaseNo{
+    background-color: wheat;
+    text-align: center;
+}
+#FormBlock{
+    background-repeat:repeat;
+    padding: 5px 5px 5px 10px;
+    width: 100%;
+    margin-top: 5px;
+    overflow-x: auto; /* 啟用橫向捲動條 */
+    overflow-y: hidden; /* 禁用垂直捲動條 */
+    white-space: nowrap; /* 防止換行 */
+}
+.submit{
+    margin-left: auto;
+    width: 130px;
+    padding: 8px 10px;
+    background-color: #007bff;
+    color:white;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+}
+.submit:hover{
+    background-color: #0b5ed7;
+    transition: all .35s;
+}
+
+/* 儲存成功通知 */
+.success-message {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 30px;
+    position: fixed;
+    border-radius: 5px;
+    top: 5px;
+    right: 0;
+    transform: translateX(-50%);
+    z-index: 9999;
+    animation: hideMessage 6s forwards;
+}
+/* Optional: Add animation for hiding */
+@keyframes hideMessage {
+    0% { opacity: 0; }
+    5% {opacity: 1; }
+    100% { opacity: 0; display: none; }
+}
+
+
+
+/* 輪播 */
+
+.jssorb031 {position:absolute;}
+.jssorb031 .i {position:absolute;cursor:pointer;}
+.jssorb031 .i .b {fill:#000;fill-opacity:0.5;stroke:#fff;stroke-width:1200;stroke-miterlimit:10;stroke-opacity:0.3;}
+.jssorb031 .i:hover .b {fill:#fff;fill-opacity:.7;stroke:#000;stroke-opacity:.5;}
+.jssorb031 .iav .b {fill:#fff;stroke:#000;fill-opacity:1;}
+.jssorb031 .i.idn {opacity:.3;}
+.jssora051 {display:block;position:absolute;cursor:pointer;}
+.jssora051 .a {fill:none;stroke:#fff;stroke-width:360;stroke-miterlimit:10;}
+.jssora051:hover {opacity:.8;}
+.jssora051.jssora051dn {opacity:.5;}
+.jssora051.jssora051ds {opacity:.3;pointer-events:none;}
+
+
+
+
+
+#bookFrameWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5); /* 背景顏色，可以自行調整透明度 */
+}
+
+#contentFrame{
+    position: relative;
+    width: 100%; /* iframe 寬度 */
+    height: 100%; /* iframe 高度 */
+    border: none;
+    /*transition: all .1s ease-in-out; !* 動畫效果 *!*/
+    user-select: none;
+}
+
+
+
+
+/* 打叉動畫 */
+
+.editBtn{
+    background-color: #febdbd;
+}
+.editBtn:hover{
+    background-color: #f88e8e;
+}
+
+.designblockrow{
+    width: 100%;
+    overflow-x: visible!important;
+}
+
+#checkhide:checked ~ .diagram_info .diagram_content{
+    max-height: 0;
+    max-width: 40px;
+}
+#checkhide:checked ~ .diagram_info .diagram_title{
+    width: 100%;
+    max-width: 100%;
+}
+
+.diagram_info{
+    position: fixed;
+    right: 0;
+    top: 50px;
+    max-width: 85vw;
+    width: 40px;
+    height: 30px;
+    /*background-color: rgba(0, 0, 0, 0.58);*/
+    /*background-color: rgba(255, 255, 255, 0.39);*/
+    z-index: 9999;
+    box-shadow: 0 0 3px 1px #909090;
+    border-radius: 2px;
+    transition: all .4s;
+    overflow: hidden;
+}
+#checkhide:checked ~ .diagram_info{
+    height: 500px;
+    width: 300px;
+}
+
+
+.diagram_content{
+    max-height: 400px; /* 调整展开的高度 */
+    overflow: hidden;
+    max-width: 100px;
+    /*transition: max-height .2s,max-width.2s;*/
+}
+.diagram_title{
+    height: 30px;
+    max-width: 40px;
+    width: 100%;
+    background-color: #858585;
+    position: relative;
+    overflow: hidden;
+    transition:  .2s,width.2s;
+}
+.checkhide{ /* label */
+    background-color: transparent;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 30px;
+    cursor: pointer;
+}
+#checkhide{
+    display: none;
+}
+/* 關閉按鈕 */
+.close_info{
+    width: 50%;
+    height: 1px;
+    background-color: #000;
+    border-radius: 5px;
+    transition: all .2s ease-in-out;
+    box-shadow: 0 0 0 rgb(0, 0, 0);
+    visibility: visible;
+    transform: translate(50%,16px);
+}
+.checkhide:hover{
+    background-color: #858585;
+    transition: background-color .3s;
+}
+#checkhide:checked ~ .diagram_info .diagram_title .checkhide{
+    background-color: #febdbd;
+}
+#checkhide:checked ~ .diagram_info .diagram_title .checkhide:hover {
+    background-color: red;
+
+}
+.close_info::before, .close_info::after {
+    content: '';
+    position: absolute;
+    right: 50%;
+    width: 100%;
+    height: 1px;
+    background-color: #000;
+    border-radius: 5px;
+    transition: all .5s ease-in-out;
+}
+.close_info::before{
+    visibility: visible; /* 顯示偽元素 */
+    opacity: 1;
+    transform: translate(50%,-6px);
+    translateX(32px)
+    translateY(-32px);
+}
+.close_info::after{
+    visibility: visible; /* 顯示偽元素 */
+    transform: translate(50%,6px);
+    translateX(32px)
+    translateY(32px);
+}
+/* 漢堡選單to打叉動畫 */
+#checkhide:checked ~ .diagram_info .diagram_title .close_info{
+    transform: translate(100%,16px);
+    visibility: hidden; /* 顯示偽元素 */
+
+}
+#checkhide:checked ~ .diagram_info .diagram_title .close_info::before{ /*右上斜左下線*/
+    transform: rotate(45deg);
+    visibility: visible; /* 顯示偽元素 */
+    transition: all .5s ease-in-out;
+
+}
+#checkhide:checked ~ .diagram_info .diagram_title .close_info::after{ /*左上斜右下線*/
+    visibility: visible; /* 顯示偽元素 */
+    transform: rotate(-45deg);
+    transition: all .5s ease-in-out;
+}
+

@@ -14,8 +14,16 @@ Route::group([
     $router->get('/', 'HomeController@index')->name('home');
     //盤點結果
 
-    $router->get('/inventory', 'InventoryController@floor')->name('inventory.floor');
-    $router->get('/inventory/{floorid}', 'InventoryController@floormap')->name('inventory.floormap');
+    $router->get('/inventory', 'InventoryController@default')->name('inventory.default');
+
+    $router->get('/inventory/{timesname}', 'InventoryController@floor')->name('inventory.floor');
+    $router->get('/inventory/{timesname}/{floorid}', 'InventoryController@floormap')->name('inventory.floormap');
+    $router->get('/inventory/{timesname}/bookcase/{floormapid}', 'InventoryController@bookcase')->name('inventory.bookcase');
+    $router->get('/inventory/end/{timesname}/{floor}/{floormap}/{caseno}/{gotopid}', 'InventoryController@end')->name('inventory.end');
+
+    //書本
+    $router->get('/inventory/small/{timesname}/{results_id}/{DBbooksID}', 'InventoryController@small')->name('inventory.small');
+    $router->patch('/inventory/small/{results_id}/{DBbooksID}/{ishere}', 'InventoryController@smallPatch')->name('inventory.smallPatch');
 
 
 //    $router->get('/librarymap', 'LibraryMapController@index')->name('librarymap');
@@ -32,5 +40,6 @@ Route::group([
     ///書櫃詳細編輯
     $router->get('/librarymap/bookcase/{floormapid}', 'LibraryMapController@bookcaseedit')->name('librarymap.bookcaseedit');
     $router->post('/librarymap/bookcase/{floormapid}', 'LibraryMapController@bookcaseeditsave')->name('librarymap.bookcaseeditsave');
+
 
 });

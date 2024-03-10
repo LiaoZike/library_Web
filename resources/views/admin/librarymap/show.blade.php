@@ -72,7 +72,7 @@
  ※支援樓層拖曳功能：可使用滑鼠拖曳樓層改變順序。<br>
  ※離開編輯介面時記得儲存送出。
 <!-- 引入 jQuery UI -->
-{{--<script src="{{asset('js/jquery-ui.min.js')}}"></script>--}}
-{{--<link rel="stylesheet" href="{{asset('css/jquery-ui.css')}}">--}}
+{{--<script src="{{assets('js/jquery-ui.min.js')}}"></script>--}}
+{{--<link rel="stylesheet" href="{{assets('css/jquery-ui.css')}}">--}}
 <script src="{{asset('js/sortable.js')}}"></script>
 <script src="{{asset('admin_js/librarymap/show.js')}}"></script>

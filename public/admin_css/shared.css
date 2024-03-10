@@ -151,3 +151,9 @@ body::-webkit-scrollbar-track { /* 設定滾動條軌道的顏色 */
     /*background-color: #ff7272 !important;*/
     background-color: #ff4545 !important;
 }
+.book_notice_green{
+    background-color: rgba(74, 185, 47, 0.65) !important;
+}
+.book_notice_gray{
+    background-color:#AAA !important;
+}

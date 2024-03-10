@@ -219,18 +219,36 @@ class LibraryMapController extends Controller{
     //顯示樓層書櫃頁面
     public function bookcaseedit($floormapid){
         $floormap=FloorMap::find($floormapid);
-        $data=[
+        $BookCaseNos = BookCaseNo::where('link_id', $floormapid)->get()->groupBy('ord')->map(function ($group) {
+            return $group->first();
+        });$data=[
             'floormapid'=>$floormapid,
             'bookcaseName'=>$floormap->bookcaseName,
             'bookcaseNote'=>$floormap->bookcaseNote,
             'severalrows'=>$floormap->severalrows,
-            'severalcols'=>$floormap->severalcols
+            'severalcols'=>$floormap->severalcols,
+            'BookCaseNos'=>$BookCaseNos
         ];
         return view("admin.librarymap.bookcaseindex",$data);
     }
     public function bookcaseeditsave(Request $request){
         $data=$request->all();
-        // 檢查 id 是否為陣列
+        $db_link_iddatas=BookCaseNo::where('link_id','=',$data['link_id'])->select('id')->get();
+        $ids = [];
+        foreach ($db_link_iddatas as $db_link_iddata) {
+            $ids[] = $db_link_iddata->id;
+        }
+        // 更新每書櫃 是幾成幾
+        if (!empty($data['link_id'])&&!empty($data['severalrows'])&&!empty($data['severalcols'])) {
+            $floormap=FloorMap::find($data['link_id']);
+            $temp=[
+                'severalrows'=>$data['severalrows'],
+                'severalcols'=>$data['severalcols']
+            ];
+            $floormap->update($temp);
+        }else abort(404);
+
+        // 更新每書櫃 是幾成幾
         if (is_array($data['id'])) {
             foreach ($data['id'] as $index => $id) {
                 // 檢查每筆資料的 id 是否為 -1
@@ -241,9 +259,13 @@ class LibraryMapController extends Controller{
                     // 如果 id 不為 -1，表示要更新資料，先找到對應的資料
                     $bookCaseNo = BookCaseNo::find($id);
 
-                    // 檢查是否找到對應的資料
-                    if (!$bookCaseNo) {
-                        return response()->json(['message' => '找不到對應的資料'], 404);
+                    // 找不到id
+                    if (!$bookCaseNo) continue;
+                    for($i=0;$i<sizeof($ids);$i++){
+                        if($ids[$i]==$id){
+                            $ids[$i]=-1;
+                            break;
+                        }
                     }
                 }
 
@@ -255,9 +277,15 @@ class LibraryMapController extends Controller{
                 // 儲存資料
                 $bookCaseNo->save();
             }
-
+        }
+        for($i=0;$i<sizeof($ids);$i++){
+            if($ids[$i]!=-1){
+                BookCaseNo::destroy($ids[$i]);
+            }
         }
 
-        return redirect()->route('admin.librarymap.bookcaseedit',$data['link_id']);
+
+        return redirect()->route('admin.librarymap.bookcaseedit',$data['link_id'])->with('success', '書櫃內部資訊儲存成功');
+
     }
 }
