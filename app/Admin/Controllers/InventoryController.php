@@ -514,7 +514,6 @@ class InventoryController extends Controller{
             }
 
         } //完善好 ，有一起刪除的BUG
-
         return 200;
     }
 
