@@ -35,7 +35,7 @@
             <button id="sendpatchbtn">確認</button>
         @endif
     </div>
-    @if(isset($mybooks[0]))
+    @if(isset($DBbook))
     <div class="DBdatarow">
         <div class="row DBrow">
             <div class="col">書名：</div>
