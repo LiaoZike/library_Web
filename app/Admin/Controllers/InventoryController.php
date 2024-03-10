@@ -390,16 +390,15 @@ class InventoryController extends Controller{
         $DBbooks_ct=0; $mybooks_ct=0;
         $results=[];
         while($DBbooks_ct<sizeof($DBbooks) || $mybooks_ct<sizeof($mybooks_ishere_1_2)){
-            if($mybooks_ishere_1_2[$mybooks_ct][0]['matchid']==-1){ //以前是找不到的，現在處理了~
-                $results[]=[$mybooks_ishere_1_2[$mybooks_ct],null];
-                $mybooks_ct++;
-            }
             if($DBbooks_ct==sizeof($DBbooks)){
                 $results[]=[$mybooks_ishere_1_2[$mybooks_ct],null];
                 $mybooks_ct++;
             }else if($mybooks_ct==sizeof($mybooks_ishere_1_2)){
                 $results[]=[null,$DBbooks[$DBbooks_ct]];
                 $DBbooks_ct++;
+            }else if($mybooks_ishere_1_2[$mybooks_ct][0]['matchid']==-1){ //以前是找不到的，現在處理了~
+                $results[]=[$mybooks_ishere_1_2[$mybooks_ct],null];
+                $mybooks_ct++;
             }
             else if($mybooks_ishere_1_2[$mybooks_ct][0]['matchid']==$DBbooks[$DBbooks_ct]['id'] &&$mybooks_ishere_1_2[$mybooks_ct][0]['ishere']!=0){
                 $results[]=[$mybooks_ishere_1_2[$mybooks_ct],$DBbooks[$DBbooks_ct]];
@@ -496,13 +495,15 @@ class InventoryController extends Controller{
             $book=InventoryResult::find($results_id);
             if($DBbooksID==-1){ //在這櫃出現多餘的書本
                 $book->update(['ishere' => $ishere]);
-            }else if($book->ord==-1){ //虛擬書本
-                if($ishere==0) $ishere=-1;
+            }else if($book->matchid==-1){ //不在這櫃的書本，只能改錯誤或正確
+                if($ishere==-1 || $ishere==2) $ishere=0; //禁止改為虛擬或錯位
                 $book->update(['ishere' => $ishere]);
-
+            }elseif($book->ord==-1){ //虛擬書本，只能改虛擬或正確
+                if($ishere==0 || $ishere==2) $ishere=-1; //禁止改為錯誤或錯位
+                $book->update(['ishere' => $ishere]);
             }
-
             else{
+                if($ishere==-1) $ishere=0; //正常書本不能改成虛擬書本
                 $otherbooks=InventoryResult::where('link_id', $book->link_id)
                     ->where('floor','=',$book->floor)
                     ->where('floormap','=',$book->floormap)
