@@ -1,8 +1,4 @@
 
-.row{
-    display: flex;
-    flex-direction: row;
-}
 .DBrow{
     border-bottom: 2px solid yellow;
 }
@@ -120,4 +116,18 @@ body::-webkit-scrollbar-track { /* 設定滾動條軌道的顏色 */
 
 .userscrollbar::-webkit-scrollbar-track { /* 設定滾動條軌道的顏色 */
     background-color: rgb(234, 234, 234);
+}
+
+
+
+
+/*****************/
+/* 書本位置查詢功能 */
+/*****************/
+input{
+    padding: 5px 0px;
+    color:black !important;
+}
+#searchbooklocal{
+    padding:  5px 20px;
 }

@@ -516,4 +516,26 @@ class InventoryController extends Controller{
 
         return 200;
     }
+
+
+
+
+
+    public function searchlocal($number,Content $content){
+        $result = BookCaseNo::where('startnum', '<=', $number)
+            ->where('endnum', '>=', $number)
+            ->get()
+            ->toarray();
+        if($result!=[]){
+            for($i=0;$i<sizeof($result);++$i){
+                $Floormap=FloorMap::find($result[$i]['link_id']);
+                $Floor=Floor::find($Floormap['store_id']);
+                $result[$i]['Floormap']=$Floormap['bookcaseName'];
+                $result[$i]['Floor']=$Floor['name'];
+            }
+        }
+        return $result;
+
+    }
+
 }

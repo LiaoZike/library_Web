@@ -16,6 +16,10 @@ Route::group([
 
     $router->get('/inventory', 'InventoryController@default')->name('inventory.default');
 
+
+    $router->get('/inventory/searchlocal/{number}', 'InventoryController@searchlocal')->name('inventory.searchlocal');
+
+
     $router->get('/inventory/{timesname}', 'InventoryController@floor')->name('inventory.floor');
     $router->get('/inventory/{timesname}/{floorid}', 'InventoryController@floormap')->name('inventory.floormap');
     $router->get('/inventory/{timesname}/bookcase/{floormapid}', 'InventoryController@bookcase')->name('inventory.bookcase');
@@ -41,5 +45,7 @@ Route::group([
     $router->get('/librarymap/bookcase/{floormapid}', 'LibraryMapController@bookcaseedit')->name('librarymap.bookcaseedit');
     $router->post('/librarymap/bookcase/{floormapid}', 'LibraryMapController@bookcaseeditsave')->name('librarymap.bookcaseeditsave');
 
+
+    ///查詢書本位置
 
 });

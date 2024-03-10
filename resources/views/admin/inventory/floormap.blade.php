@@ -147,8 +147,8 @@
             if(temp_data!="") temp_data+=","
             temp_data+=selectedOptions[i].text
         }
-        temp_url=temp_url.replace('times',temp_data)
-        window.location.href = temp_url;
+        new_url=temp_url.replace('times',temp_data)
+        window.location.href = new_url;
     }
 
     $(document).ready(function () {
