@@ -314,74 +314,76 @@ class InventoryController extends Controller{
         }
         $mybooks_ishere_0=$finalArray;
         /* 依序處理有問題的書本 透過ord反查matchord塞前面 */
-        foreach($mybooks_ishere_0 as $mybook_error){
-            if($mybook_error['ord']==1) {
-                array_splice($mybooks_ishere_1_2, 0, 0, [[$mybook_error]]);
-                continue;
-            } //解決前面沒資料
-
-            $error_ord=$mybook_error['ord'];
-            $do_continue=false;
-            $best_to_insert_ord=-1;
-            for($i=0;$i<sizeof($mybooks_ishere_1_2);$i++){
-                if(isset($mybooks_ishere_1_2[$i+1][0]) && $mybooks_ishere_1_2[$i+1][0]['ord']==$error_ord+1 &&$mybooks_ishere_1_2[$i+1][0]['ishere']==1){
-                    //優先找他的ord後面的(無錯位的)，塞到他的前面
-                    $temp_matchord=$mybooks_ishere_1_2[$i+1][0]['matchord'];
-                    for($j=0;$j<sizeof($mybooks_ishere_1_2);$j++){
-                        if($mybooks_ishere_1_2[$j][0]['matchord']==$temp_matchord){
-                            array_splice($mybooks_ishere_1_2, $j, 0, [[$mybook_error]]);
-                            $do_continue=true;
-                            break;
-                        }
-                    }
-                    break;
-                }else if(isset($mybooks_ishere_1_2[$i][0]) && $mybooks_ishere_1_2[$i][0]['ord']==$error_ord-1 &&$mybooks_ishere_1_2[$i][0]['ishere']==1){
-                    //優先找他的ord前面的(無錯位的)，塞到他的後面
-                    $temp_matchord=$mybooks_ishere_1_2[$i][0]['matchord'];
-                    for($j=0;$j<sizeof($mybooks_ishere_1_2);$j++){
-                        if($mybooks_ishere_1_2[$j][0]['matchord']==$temp_matchord){
-                            array_splice($mybooks_ishere_1_2, $j+1, 0, [[$mybook_error]]);
-                            $do_continue=true;
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-            if($do_continue==true) continue;
-            $best_to_insert_ord=0;
-            for($i=0;$i<sizeof($mybooks_ishere_1_2);$i++){
-                // 越小越好
-                if(abs($best_to_insert_ord-$error_ord) < abs($mybooks_ishere_1_2[$i][0]['ord']-$error_ord)){
-                    $best_to_insert_ord=$mybooks_ishere_1_2[$i][0]['ord'];
-                }
-            }
-
-            if($best_to_insert_ord<=$error_ord){ //小
-                if(isset($mybooks_ishere_1_2[$best_to_insert_ord][0])){
-                    $temp_matchord=$mybooks_ishere_1_2[$best_to_insert_ord][0]['matchord'];
-                    for($j=0;$j<sizeof($mybooks_ishere_1_2);$j++){
-                        if($mybooks_ishere_1_2[$j][0]['matchord']==$temp_matchord){
-                            array_splice($mybooks_ishere_1_2, $j, 0, [[$mybook_error]]);
-                            break;
-                        }
-                    }
-                    break;
-                }else{
+        if($mybooks_ishere_0!=[]){
+            foreach($mybooks_ishere_0 as $mybook_error){
+                if($mybook_error['ord']==1) {
                     array_splice($mybooks_ishere_1_2, 0, 0, [[$mybook_error]]);
-                }
-            }else if($best_to_insert_ord<=$error_ord){ //大
-                if(isset($mybooks_ishere_1_2[$best_to_insert_ord][0])){
-                    $temp_matchord=$mybooks_ishere_1_2[$best_to_insert_ord][0]['matchord'];
-                    for($j=0;$j<sizeof($mybooks_ishere_1_2);$j++){
-                        if($mybooks_ishere_1_2[$j][0]['matchord']==$temp_matchord){
-                            array_splice($mybooks_ishere_1_2, $j+1, 0, [[$mybook_error]]);
-                            break;
+                    continue;
+                } //解決前面沒資料
+
+                $error_ord=$mybook_error['ord'];
+                $do_continue=false;
+                $best_to_insert_ord=-1;
+                for($i=0;$i<sizeof($mybooks_ishere_1_2);$i++){
+                    if(isset($mybooks_ishere_1_2[$i+1][0]) && $mybooks_ishere_1_2[$i+1][0]['ord']==$error_ord+1 &&$mybooks_ishere_1_2[$i+1][0]['ishere']==1){
+                        //優先找他的ord後面的(無錯位的)，塞到他的前面
+                        $temp_matchord=$mybooks_ishere_1_2[$i+1][0]['matchord'];
+                        for($j=0;$j<sizeof($mybooks_ishere_1_2);$j++){
+                            if($mybooks_ishere_1_2[$j][0]['matchord']==$temp_matchord){
+                                array_splice($mybooks_ishere_1_2, $j, 0, [[$mybook_error]]);
+                                $do_continue=true;
+                                break;
+                            }
                         }
+                        break;
+                    }else if(isset($mybooks_ishere_1_2[$i][0]) && $mybooks_ishere_1_2[$i][0]['ord']==$error_ord-1 &&$mybooks_ishere_1_2[$i][0]['ishere']==1){
+                        //優先找他的ord前面的(無錯位的)，塞到他的後面
+                        $temp_matchord=$mybooks_ishere_1_2[$i][0]['matchord'];
+                        for($j=0;$j<sizeof($mybooks_ishere_1_2);$j++){
+                            if($mybooks_ishere_1_2[$j][0]['matchord']==$temp_matchord){
+                                array_splice($mybooks_ishere_1_2, $j+1, 0, [[$mybook_error]]);
+                                $do_continue=true;
+                                break;
+                            }
+                        }
+                        break;
                     }
-                    break;
-                }else{
-                    array_splice($mybooks_ishere_1_2, 0, 0, [[$mybook_error]]);
+                }
+                if($do_continue==true) continue;
+                $best_to_insert_ord=0;
+                for($i=0;$i<sizeof($mybooks_ishere_1_2);$i++){
+                    // 越小越好
+                    if(abs($best_to_insert_ord-$error_ord) < abs($mybooks_ishere_1_2[$i][0]['ord']-$error_ord)){
+                        $best_to_insert_ord=$mybooks_ishere_1_2[$i][0]['ord'];
+                    }
+                }
+
+                if($best_to_insert_ord<=$error_ord){ //小
+                    if(isset($mybooks_ishere_1_2[$best_to_insert_ord][0])){
+                        $temp_matchord=$mybooks_ishere_1_2[$best_to_insert_ord][0]['matchord'];
+                        for($j=0;$j<sizeof($mybooks_ishere_1_2);$j++){
+                            if($mybooks_ishere_1_2[$j][0]['matchord']==$temp_matchord){
+                                array_splice($mybooks_ishere_1_2, $j, 0, [[$mybook_error]]);
+                                break;
+                            }
+                        }
+                        break;
+                    }else{
+                        array_splice($mybooks_ishere_1_2, 0, 0, [[$mybook_error]]);
+                    }
+                }else if($best_to_insert_ord<=$error_ord){ //大
+                    if(isset($mybooks_ishere_1_2[$best_to_insert_ord][0])){
+                        $temp_matchord=$mybooks_ishere_1_2[$best_to_insert_ord][0]['matchord'];
+                        for($j=0;$j<sizeof($mybooks_ishere_1_2);$j++){
+                            if($mybooks_ishere_1_2[$j][0]['matchord']==$temp_matchord){
+                                array_splice($mybooks_ishere_1_2, $j+1, 0, [[$mybook_error]]);
+                                break;
+                            }
+                        }
+                        break;
+                    }else{
+                        array_splice($mybooks_ishere_1_2, 0, 0, [[$mybook_error]]);
+                    }
                 }
             }
         }
