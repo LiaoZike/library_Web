@@ -320,7 +320,6 @@ class InventoryController extends Controller{
                     array_splice($mybooks_ishere_1_2, 0, 0, [[$mybook_error]]);
                     continue;
                 } //解決前面沒資料
-
                 $error_ord=$mybook_error['ord'];
                 $do_continue=false;
                 $best_to_insert_ord=-1;
