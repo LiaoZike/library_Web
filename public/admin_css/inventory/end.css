@@ -13,16 +13,16 @@
     position: relative;
 }
 .imagerow img{
-    width: 1024px;
-    height: 768px;
+    width: 1280px;
+    height: 720px;
 }
 .slides{
-    width: 1024px;
-    height: 768px;
+    width: 1280px;
+    height: 720px;
 }
 #slider1_container{
-    width: 1024px;
-    height: 768px;
+    width: 1280px;
+    height: 720px;
 }
 a{
     background-color: #FFF;
