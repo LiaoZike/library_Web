@@ -594,13 +594,12 @@ class InventoryController extends Controller{
 
             // 若此格是錯位書，先替換成 [null, db]
             if ($yolo && isset($yolo['ishere']) && (int)$yolo['ishere'] === 2) {
-                $output[] = [null, $db]; // 原格改成只有 DB
+                $output[] = ["my_orange", $db]; // 原格改成只有 DB
                 continue;
             }
 
             $output[] = $pair; // 其他維持原樣
         }
-
         // 插入實際出現位置的 [yolo, null]
         foreach ($replaced as $book) {
             $ord = $book['ord'] ?? null;
@@ -634,9 +633,9 @@ class InventoryController extends Controller{
 
             // 判斷插前或後
             if ($bestOrd !== null && $ord < $bestOrd) {
-                array_splice($output, $bestIdx, 0, [[ $book, null ]]);
+                array_splice($output, $bestIdx, 0, [[ $book, "DB_orange" ]]);
             } else {
-                array_splice($output, $bestIdx + 1, 0, [[ $book, null ]]);
+                array_splice($output, $bestIdx + 1, 0, [[ $book, "DB_orange" ]]);
             }
         }
 

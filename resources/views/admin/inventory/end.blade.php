@@ -3,6 +3,38 @@
 <link rel="stylesheet" href="{{asset('admin_css/inventory/end.css')}}">
 
 <div class="ifcontent container-fluid">
+    <style>
+        .block_row{
+            display: flex;
+            align-items: end;
+        }
+        .mybooks_row{
+            display: flex;
+            align-items: start;
+        }
+        /* DBBooks 和 mybooks 的共用樣式 */
+        .DBBooks, .mybooks {
+            margin-bottom: 10px;
+            margin-left: 10px;
+        }
+        .mybooks{
+            cursor: pointer !important;
+        }
+        /* DBBooks 的樣式，設定圖片寬度和高度，並使用 object-fit 來控制圖片在容器內的放置方式 */
+        .DBBooks img,.mybooks img{
+            object-fit: cover; /* 調整這個值以滿足你的需求，可能的值包括 cover、contain、fill、scale-down */
+            outline: 3px solid #ddd; /* 可以根據需要添加邊框樣式 */
+        }
+        .DB_orange{
+            outline: 3px solid rgba(182, 115, 3, 1) !important; /* 可以根據需要添加邊框樣式 */
+            background-color: rgba(255, 159, 0, 0.4);
+        }
+        .my_orange{
+            outline: 3px solid rgba(182, 115, 3, 1) !important; /* 可以根據需要添加邊框樣式 */
+            background-color: rgba(20, 20, 20, 0.2);
+        
+        }
+    </style>
     @if(session('success'))
         <div id="success-message" class="success-message">
             <i class="fa fa-check" aria-hidden="true"></i>
@@ -32,28 +64,33 @@
     </div>
 
     <div id="FormBlock">
+        <!-- 資料庫書本 -->
         <div class="block_row">
             @for($i=0;$i<sizeof($results);$i++)
 {{--                    <h1>DB計數:{{$DBcount}} /書本計數: {{$i}} / 目前ord:{{$results[$i]->ord}}</h1>--}}
-               <div class="books_block"> {{--block_hidden--}}
-                   @if(!is_null($results[$i][1])&&($results[$i][1]!='DB_black'))
+               <div class="books_block">
+                   @if(!is_null($results[$i][1])&&($results[$i][1]!='DB_black')&&($results[$i][1]!='DB_orange'))
                       <div class="DBBooks">
                           <img src="{{$results[$i][1]['url']}}" style="user-select:none;">
                       </div>
+                   @elseif(!is_null($results[$i][1])&&($results[$i][1]=='DB_orange'))
+                        <div class="DBBooks DB_orange">
+                            <img style="user-select:none;width: 0;">
+                       </div>
                    @else
                        <div class="DBBooks @if(isset($results[$i][1])&&$results[$i][1]=='DB_black') DB_black @else DB_gray @endif">
                            <img style="user-select:none;width: 0;">
                        </div>
                    @endif
 
-                   @if(!is_null($results[$i][0])&&$results[$i][0]!='my_orange')
+                   @if(!is_null($results[$i][0])&&$results[$i][0]!='my_orange'&&($results[$i][1]!='DB_black')&&($results[$i][1]!='DB_orange'))
                    <div class="block_hidden">
 {{--                           <img src="{{asset($results[$i][0]['url'])}}" style="user-select:none;">--}}
-                           <span class="x1" style="display: none">{{$results[$i][0]['x1']}}</span>
-                           <span class="x2" style="display: none">{{$results[$i][0]['x2']}}</span>
-                           <span class="y1" style="display: none">{{$results[$i][0]['y1']}}</span>
-                           <span class="y2" style="display: none">{{$results[$i][0]['y2']}}</span>
-                           <span class="imageord" style="display: none">{{$results[$i][0]['imageord']}}</span>
+                        <span class="x1" style="display: none">{{$results[$i][0]['x1']}}</span>
+                        <span class="x2" style="display: none">{{$results[$i][0]['x2']}}</span>
+                        <span class="y1" style="display: none">{{$results[$i][0]['y1']}}</span>
+                        <span class="y2" style="display: none">{{$results[$i][0]['y2']}}</span>
+                        <span class="imageord" style="display: none">{{$results[$i][0]['imageord']}}</span>
                    </div>
                    @endif
                </div>
@@ -61,6 +98,7 @@
 
         </div>
 
+        <!-- 辨識書本 -->
         <div class="mybooks_row">
             @for($i=0;$i<sizeof($results);$i++)
                 <div class="books_block"> {{--block_hidden--}}
@@ -105,31 +143,6 @@
         </div>
 
     </div>
-        <style>
-            .block_row{
-                display: flex;
-                align-items: end;
-            }
-            .mybooks_row{
-                display: flex;
-                align-items: start;
-
-            }
-            /* DBBooks 和 mybooks 的共用樣式 */
-            .DBBooks, .mybooks {
-                margin-bottom: 10px;
-                margin-left: 10px;
-            }
-            .mybooks{
-                cursor: pointer !important;
-            }
-            /* DBBooks 的樣式，設定圖片寬度和高度，並使用 object-fit 來控制圖片在容器內的放置方式 */
-            .DBBooks img,.mybooks img{
-                object-fit: cover; /* 調整這個值以滿足你的需求，可能的值包括 cover、contain、fill、scale-down */
-                outline: 3px solid #ddd; /* 可以根據需要添加邊框樣式 */
-            }
-
-        </style>
         @php
             $temp_ct=0;
         @endphp
@@ -220,7 +233,7 @@
                     $('.my_orange').css('height',mybooksheight*0.8+'px')
                     $('.DB_gray').css('height',DBbooksheight*0.8+'px')
                     $('.DB_black').css('height',DBbooksheight*0.8+'px')
-                    $('.DB_black').css('height',DBbooksheight*0.8+'px')
+                    $('.DB_orange').css('height',DBbooksheight+'px')
                 }, 500); // 3000 毫秒等於 3 秒
             });
 
