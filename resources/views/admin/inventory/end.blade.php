@@ -48,12 +48,12 @@
 
                    @if(!is_null($results[$i][0])&&$results[$i][0]!='my_orange')
                    <div class="block_hidden">
-{{--                           <img src="{{asset($results[$i][0][0]['url'])}}" style="user-select:none;">--}}
-                           <span class="x1" style="display: none">{{$results[$i][0][0]['x1']}}</span>
-                           <span class="x2" style="display: none">{{$results[$i][0][0]['x2']}}</span>
-                           <span class="y1" style="display: none">{{$results[$i][0][0]['y1']}}</span>
-                           <span class="y2" style="display: none">{{$results[$i][0][0]['y2']}}</span>
-                           <span class="imageord" style="display: none">{{$results[$i][0][0]['imageord']}}</span>
+{{--                           <img src="{{asset($results[$i][0]['url'])}}" style="user-select:none;">--}}
+                           <span class="x1" style="display: none">{{$results[$i][0]['x1']}}</span>
+                           <span class="x2" style="display: none">{{$results[$i][0]['x2']}}</span>
+                           <span class="y1" style="display: none">{{$results[$i][0]['y1']}}</span>
+                           <span class="y2" style="display: none">{{$results[$i][0]['y2']}}</span>
+                           <span class="imageord" style="display: none">{{$results[$i][0]['imageord']}}</span>
                    </div>
                    @endif
                </div>
@@ -63,24 +63,23 @@
 
         <div class="mybooks_row">
             @for($i=0;$i<sizeof($results);$i++)
-                {{--                    <h1>DB計數:{{$DBcount}} /書本計數: {{$i}} / 目前ord:{{$results[$i]->ord}}</h1>--}}
                 <div class="books_block"> {{--block_hidden--}}
                     @if(!is_null($results[$i][0])&&$results[$i][0]!='my_orange')
-                        <a href="{{route('admin.inventory.small',['timesname'=>$timesname,'results_id'=>$results[$i][0][0]['id'],'DBbooksID'=>$results[$i][0][0]['matchid']])}}"  class="mybooks
-                            @if($results[$i][0][0]['ishere']==1) bck_green
-                            @elseif($results[$i][0][0]['ishere']==0) bck_red
-                            @elseif($results[$i][0][0]['ishere']==2) bck_orange
-                            @elseif($results[$i][0][0]['ishere']==-1) my_gray
+                        <a href="{{route('admin.inventory.small',['timesname'=>$timesname,'results_id'=>$results[$i][0]['id'],'DBbooksID'=>$results[$i][0]['matchid']])}}"  class="mybooks
+                            @if($results[$i][0]['ishere']==1) bck_green
+                            @elseif($results[$i][0]['ishere']==0) bck_red
+                            @elseif($results[$i][0]['ishere']==2) bck_orange
+                            @elseif($results[$i][0]['ishere']==-1) my_gray
                         @endif" style="display: block;">
 
-                            <img src="{{$results[$i][0][0]['url']}}" style="user-select:none;">
+                            <img src="{{$results[$i][0]['url']}}" style="user-select:none;">
                         </a>
                     @elseif($results[$i][0]=='my_orange')
                         <div class="mybooks my_orange">
                             <img style="user-select:none;width: 0;">
                         </div>
                     @elseif(!is_null($results[$i][0]))
-                        <a href="{{route('admin.inventory.small',['timesname'=>$timesname,'results_id'=>"null",'DBbooksID'=>$results[$i][0][0]['matchid']])}}"  class="mybooks my_gray"  style="display: inline-block">
+                        <a href="{{route('admin.inventory.small',['timesname'=>$timesname,'results_id'=>"null",'DBbooksID'=>$results[$i][0]['matchid']])}}"  class="mybooks my_gray"  style="display: inline-block">
                             <img src="" style="user-select:none;width: 0;">
                         </a>
                     @else
@@ -92,12 +91,12 @@
 
                     @if(!is_null($results[$i][0])&&$results[$i][0]!='my_orange')
                         <div class="block_hidden">
-                            <img src="{{asset($results[$i][0][0]['url'])}}" style="user-select:none;">
-                            <span class="x1" style="display: none">{{$results[$i][0][0]['x1']}}</span>
-                            <span class="x2" style="display: none">{{$results[$i][0][0]['x2']}}</span>
-                            <span class="y1" style="display: none">{{$results[$i][0][0]['y1']}}</span>
-                            <span class="y2" style="display: none">{{$results[$i][0][0]['y2']}}</span>
-                            <span class="imageord" style="display: none">{{$results[$i][0][0]['imageord']}}</span>
+                            <img src="{{asset($results[$i][0]['url'])}}" style="user-select:none;">
+                            <span class="x1" style="display: none">{{$results[$i][0]['x1']}}</span>
+                            <span class="x2" style="display: none">{{$results[$i][0]['x2']}}</span>
+                            <span class="y1" style="display: none">{{$results[$i][0]['y1']}}</span>
+                            <span class="y2" style="display: none">{{$results[$i][0]['y2']}}</span>
+                            <span class="imageord" style="display: none">{{$results[$i][0]['imageord']}}</span>
                         </div>
                     @endif
                 </div>

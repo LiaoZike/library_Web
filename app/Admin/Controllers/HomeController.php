@@ -12,8 +12,9 @@ class HomeController extends Controller
 {
     public function index(Content $content)
     {
+        // return redirect()->route('admin.inventory.default');
         return $content
             ->title('主控台')
-            ->description('Description...');
+            ->description('.');
     }
 }

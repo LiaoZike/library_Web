@@ -268,6 +268,396 @@ class InventoryController extends Controller{
     public function end($timesname,$floor,$floormap,$caseno,$gotopid,Content $content){
         $filter_times = explode(',', $timesname);
         $filter_timesID = InventoryTime::whereIn('inventory_time', $filter_times)->pluck('id')->toArray();
+        // 取得書櫃格－書本編碼範圍
+        [$startnum, $endnum] = $this->getBookRange($floor, $floormap, $caseno);
+        $DBbooks = BookInfo::whereBetween('local', [$startnum, $endnum])->orderBy('local')->get()->toArray();
+        // dd($DBbooks);
+        // 取得實際辨識結果
+        $YOLO_books=InventoryResult::whereIn('link_id', $filter_timesID)
+            ->where('floor', $floor)
+            ->where('floormap', $floormap)
+            ->where('bookcaseord', $caseno)
+            ->orderBy('matchord', 'asc')->get()->toArray();
+        // 1.事先把DB書本＋YOLO書本做聯集合併
+        $results = $this->mergeBooks($YOLO_books,$DBbooks);
+        $results = $this->adjust_ADDBooks_ByOrdBlocks($results);
+        $results = $this->adjust_REPLACEBooks_ByOrdBlocks($results);
+        // dd($results);
+        // 2.將YOLO多書本移動到 正確出現位置(match_id=-1)
+        // foreach( )
+
+        
+        
+        /*
+        $DBbooks_ct=0; $mybooks_ct=0;
+        $results=[];
+        while($DBbooks_ct<sizeof($DBbooks) || $mybooks_ct<sizeof($mybooks_ishere_1_2)){
+            if($DBbooks_ct==sizeof($DBbooks)){
+                $results[]=[$mybooks_ishere_1_2[$mybooks_ct],null];
+                $mybooks_ct++;
+            }else if($mybooks_ct==sizeof($mybooks_ishere_1_2)){
+                $results[]=[null,$DBbooks[$DBbooks_ct]];
+                $DBbooks_ct++;
+            }else if($mybooks_ishere_1_2[$mybooks_ct][0]['matchid']==-1){ //以前是找不到的，現在處理了~
+                $results[]=[$mybooks_ishere_1_2[$mybooks_ct],null];
+                $mybooks_ct++;
+            }
+            else if($mybooks_ishere_1_2[$mybooks_ct][0]['matchid']==$DBbooks[$DBbooks_ct]['id'] &&$mybooks_ishere_1_2[$mybooks_ct][0]['ishere']!=0){
+                $results[]=[$mybooks_ishere_1_2[$mybooks_ct],$DBbooks[$DBbooks_ct]];
+                $DBbooks_ct++;
+                $mybooks_ct++;
+            }else if($mybooks_ishere_1_2[$mybooks_ct][0]['ishere']==1){
+                $results[]=[null,$DBbooks[$DBbooks_ct]];
+                $DBbooks_ct++;
+            }else{
+                $results[]=[$mybooks_ishere_1_2[$mybooks_ct],null];
+                $mybooks_ct++;
+            }
+        }
+        for($i=0;$i<sizeof($results);$i++){
+            if($results[$i][0]!='my_orange' &&isset($results[$i][0][0]) && $results[$i][0][0]['ishere']==2 && !is_null($results[$i][0][0]) && !is_null($results[$i][1])){
+                if(($results[$i][1]=='DB_black')){
+                    continue;
+                }
+                $realmyord=$results[$i][0][0]['ord'];
+                $temp_data=$results[$i][0];
+                $results[$i][0]='my_orange';
+                for($j=0;$j<sizeof($results);$j++){
+                    if($results[$j][0]!='my_orange' && isset($results[$j][0][0]) && $results[$j][0][0]['ord']>$realmyord){ //找到插前面
+                        array_splice($results, max($j,0), 0,  [array_merge([$temp_data], ['DB_black'])]);
+                        break;
+                    }
+                }
+            }
+        }
+        //將虛擬的書本加入進去
+        foreach ($virtual_books as $virtual_book){
+            for($i=0;$i<sizeof($results);$i++){
+                if(!is_null($results[$i][1]) && $results[$i][1]!="DB_black"&& $virtual_book['matchid']==$results[$i][1]['id']){
+                    $results[$i][0][0]=$virtual_book;
+                    break;
+                }
+
+            }
+        }*/
+
+        // 書櫃圖片
+        $bookcaseimg = InventoryBookcaseimg::whereIn('link_id', $filter_timesID)
+        ->where('floor', $floor)
+        ->where('floormap', $floormap)
+        ->where('bookcaseord', $caseno)
+        ->orderBy('id', 'asc')
+        ->get();
+
+        return view("admin.inventory.end", [
+        'timesname' => $timesname,
+        'gotopid' => $gotopid,
+        'floor' => $floor,
+        'floormap' => $floormap,
+        'caseno' => $caseno,
+        'results' => $results,
+        'DBbooks' => $DBbooks,
+        'bookcaseimg' => $bookcaseimg
+        ]);
+
+
+    }
+    /*********************/
+    /*   END子function   */
+    /* 取得書櫃格的書籍範圍 */
+    /*********************/
+    private function getBookRange($floor, $floormap, $caseno){
+        try {
+            $floorRecord = Floor::where('name', $floor)->first();
+            if (!$floorRecord) return ["", ""];
+
+            $map = FloorMap::where('bookcaseName', $floormap)
+                ->where('store_id', $floorRecord->id)->first();
+            if (!$map) return ["", ""];
+
+            $bookcase = BookCaseNo::where('ord', $caseno)
+                ->where('link_id', $map->id)->first();
+
+            return $bookcase ? [$bookcase->startnum, $bookcase->endnum] : ["", ""];
+        } catch (Exception $e) {
+            Log::error("Book range error", ['floor' => $floor, 'floormap' => $floormap, 'caseno' => $caseno, 'err' => $e->getMessage()]);
+            return ["", ""];
+        }
+    }
+
+    // 依 ishere 分類盤點結果 正確/錯位/不見
+    private function classifyMyBooks($filter_timesID, $floor, $floormap, $caseno){
+        $raw = InventoryResult::whereIn('link_id', $filter_timesID)
+            ->where('floor', $floor)
+            ->where('floormap', $floormap)
+            ->where('bookcaseord', $caseno)
+            ->orderBy('matchord', 'asc')->get()->toArray();
+
+        $correct = [];   // ishere = 1
+        $displaced = []; // ishere = 2
+        $missing = [];   // ishere = -1
+        foreach ($raw as $item) {
+            if ($item['ishere'] == 1 && $item['matchid'] != -1) {
+                $correct[$item['matchord']][] = $item;
+            } elseif ($item['ishere'] == 2 && $item['matchid'] != -1) {
+                $displaced[$item['matchord']][] = $item;
+            } elseif ($item['ishere'] == -1) {
+                $missing[] = $item;
+            }
+        }
+
+        return [
+            'raw' => $raw,
+            'correct' => array_values($correct),
+            'displaced' => array_values($displaced),
+            'missing' => $missing
+        ];
+    }
+    // 合併書籍（DB 與實際盤點）
+    private function mergeBooks($YOLO_books, $DBbooks){
+        $results = [];
+
+        // DB書本與辨識書本做聯集
+        foreach ($DBbooks as $dbBook) {
+            $match = collect($YOLO_books)->firstWhere('matchid', $dbBook['id']);
+            $results[] = [$match ?? null,$dbBook,];
+        }
+        $dbIds = array_column($DBbooks, 'id');
+        $extraYolo = collect($YOLO_books)->filter(function ($y) use ($dbIds) {
+            return !in_array($y['matchid'], $dbIds);
+        });
+        foreach ($extraYolo as $yoloBook) {
+            $results[] = [$yoloBook,null];
+        }
+        return $results;
+    }
+
+    private function adjust_ADDBooks_ByOrdBlocks(array $results): array{
+        // 依書櫃拆組處理，避免跨書櫃插入
+        $groups = []; // bookcaseord => ['anchors'=>[], 'orphans'=>[]]
+        foreach ($results as $idx => $pair) {
+            $y = $pair[0] ?? null;
+            $cab = $y['bookcaseord'] ?? ($pair[1]['bookcaseord'] ?? '__NO_CAB__');
+
+            if (!isset($groups[$cab])) $groups[$cab] = ['anchors' => [], 'orphans' => []];
+
+            if ($y && isset($y['matchid']) && (int)$y['matchid'] === -1) {
+                // 孤兒
+                $groups[$cab]['orphans'][] = ['pair' => $pair, 'idx' => $idx, 'ord' => $y['ord'] ?? null];
+            } else {
+                // 錨點（含 DB-only；但優先使用有 yolo 且 matchid!=-1 的作為「強錨點」）
+                $anchorOrd = $y['ord'] ?? null; // 若無 yolo，就無 ord；之後當弱錨點
+                $groups[$cab]['anchors'][] = ['pair' => $pair, 'idx' => $idx, 'ord' => $anchorOrd, 'hasYolo' => (bool)$y];
+            }
+        }
+
+        // 若沒有孤兒，直接回傳
+        $hasOrphan = false;
+        foreach ($groups as $g) { if (!empty($g['orphans'])) { $hasOrphan = true; break; } }
+        if (!$hasOrphan) return $results;
+
+        // 先把原本不是孤兒的順序撈出來（之後將孤兒塊插到這裡面）
+        $filtered = [];
+        foreach ($results as $pair) {
+            $y = $pair[0] ?? null;
+            if (!($y && isset($y['matchid']) && (int)$y['matchid'] === -1)) {
+                $filtered[] = $pair;
+            }
+        }
+
+        // 針對每個書櫃做區塊插入
+        foreach ($groups as $cab => $g) {
+            if (empty($g['orphans'])) continue;
+
+            // 依 ord 排序孤兒（沒有 ord 的放最後）
+            usort($g['orphans'], function ($a, $b) {
+                $ao = $a['ord']; $bo = $b['ord'];
+                if ($ao === null && $bo === null) return 0;
+                if ($ao === null) return 1;
+                if ($bo === null) return -1;
+                return $ao <=> $bo;
+            });
+
+            // 切成連續 ord 區塊（差1視為連續），ord 為 null 的各自成塊
+            $blocks = [];
+            $curr = [];
+            foreach ($g['orphans'] as $o) {
+                if (empty($curr)) {
+                    $curr = [$o];
+                } else {
+                    $prevOrd = end($curr)['ord'];
+                    if ($prevOrd !== null && $o['ord'] !== null && $o['ord'] === $prevOrd + 1) {
+                        $curr[] = $o;
+                    } else {
+                        $blocks[] = $curr;
+                        $curr = [$o];
+                    }
+                }
+            }
+            if (!empty($curr)) $blocks[] = $curr;
+
+            // 取得本書櫃的錨點（先強錨點：有 yolo 且 matchid!=-1，無則用所有非孤兒項目）
+            $anchors = array_values(array_filter($g['anchors'], fn($a) => $a['hasYolo'] && $a['ord'] !== null));
+            if (empty($anchors)) {
+                // 沒有強錨點，退化成用所有 filtered 裡、同書櫃的項目當弱錨點，順序即 index
+                $anchors = [];
+                foreach ($filtered as $i => $p) {
+                    $y = $p[0] ?? null;
+                    $pCab = $y['bookcaseord'] ?? ($p[1]['bookcaseord'] ?? '__NO_CAB__');
+                    if ($pCab === $cab) {
+                        $anchors[] = ['pair' => $p, 'idx' => $i, 'ord' => $y['ord'] ?? null, 'hasYolo' => (bool)$y];
+                    }
+                }
+            }
+
+            // 若完全沒有錨點（該櫃全是孤兒或整櫃都 DB-only 無 ord），直接依 ord 區塊排序後，附加到該櫃區段尾端
+            if (empty($anchors)) {
+                foreach ($blocks as $block) {
+                    // 直接加到 filtered 尾端（或你可選擇加到該櫃的第一個位置，視 UI 需求）
+                    foreach ($block as $o) $filtered[] = $o['pair'];
+                }
+                continue;
+            }
+
+            // 建立「索引 -> 實際 filtered 位置」的映射，方便算插入位置
+            // 這裡用即時查找避免在插入後索引移動錯亂
+            $findFilteredIndex = function ($pair) use (&$filtered): int {
+                // 找第一個嚴格相等的元素（指標相等；若拷貝則需用特徵比對）
+                foreach ($filtered as $i => $p) {
+                    if ($p === $pair) return $i;
+                }
+                return -1;
+            };
+
+            // 依每一個 block 計算插入點，再一次性插入
+            foreach ($blocks as $block) {
+                // 計算區塊的「中位 ord」（null 則以現存 anchor ord 最近者處理）
+                $ords = array_values(array_filter(array_map(fn($o) => $o['ord'], $block), fn($v) => $v !== null));
+                $midOrd = !empty($ords) ? $ords[(int)floor((count($ords) - 1) / 2)] : null;
+
+                // 找最近的 anchor（以 ord 距離為主；若 anchor 沒 ord，當作無限遠）
+                $best = null;
+                $bestDist = PHP_INT_MAX;
+                foreach ($anchors as $a) {
+                    $aIdx = $findFilteredIndex($a['pair']);
+                    if ($aIdx < 0) continue; // 可能已被前面的操作影響，跳過
+                    $aOrd = $a['ord'];
+                    $dist = ($midOrd !== null && $aOrd !== null) ? abs($midOrd - $aOrd) : PHP_INT_MAX - 1;
+                    if ($dist < $bestDist) {
+                        $bestDist = $dist;
+                        $best = ['pair' => $a['pair'], 'idx' => $aIdx, 'ord' => $aOrd];
+                    }
+                }
+
+                // 若沒有任何 anchor 有有效索引，就把區塊加到尾端
+                if ($best === null) {
+                    foreach ($block as $o) $filtered[] = $o['pair'];
+                    continue;
+                }
+
+                // 決定插前/後：midOrd < anchorOrd → 插前；否則插後
+                $insertIndex = $best['idx'];
+                if ($midOrd !== null && $best['ord'] !== null && $midOrd > $best['ord']) {
+                    $insertIndex = $best['idx'] + 1;
+                }
+                // 按 block 原本 ord 順序插入（維持區塊內順序）
+                $toInsert = array_map(fn($o) => $o['pair'], $block);
+                array_splice($filtered, $insertIndex, 0, $toInsert);
+            }
+        }
+        return $filtered;
+    }
+    
+    /**
+     * 處理錯位書本 (ishere = 2)
+     * 將原格改為 [null, db]，並在實際 ord 位置插入 [yolo, null]
+     */
+    private function adjust_REPLACEBooks_ByOrdBlocks(array $results): array{
+        $replaced = [];  // 收集要處理的錯位書
+        $output   = [];  // 輸出最終結果
+
+        // 先掃描所有錯位書
+        foreach ($results as $pair) {
+            $y = $pair[0] ?? null;
+            if ($y && isset($y['ishere']) && (int)$y['ishere'] === 2) {
+                $replaced[] = $y;
+            }
+        }
+
+        // 若沒有錯位書，直接回傳
+        if (empty($replaced)) return $results;
+
+        // 保留原順序，逐筆處理
+        foreach ($results as $pair) {
+            $yolo = $pair[0] ?? null;
+            $db   = $pair[1] ?? null;
+
+            // 若此格是錯位書，先替換成 [null, db]
+            if ($yolo && isset($yolo['ishere']) && (int)$yolo['ishere'] === 2) {
+                $output[] = [null, $db]; // 原格改成只有 DB
+                continue;
+            }
+
+            $output[] = $pair; // 其他維持原樣
+        }
+
+        // 插入實際出現位置的 [yolo, null]
+        foreach ($replaced as $book) {
+            $ord = $book['ord'] ?? null;
+            $cab = $book['bookcaseord'] ?? null;
+            if ($ord === null) {
+                // 沒有 ord，直接附加到尾端
+                $output[] = [$book, null];
+                continue;
+            }
+
+            // 找同書櫃中 ord 最接近的 anchor 位置
+            $bestIdx = 0;
+            $bestDiff = INF;
+            $bestOrd = null;
+
+            foreach ($output as $i => $pair) {
+                $y = $pair[0] ?? null;
+                $yOrd = $y['ord'] ?? null;
+                $yCab = $y['bookcaseord'] ?? null;
+
+                if ($yOrd === null) continue;
+                if ($cab !== null && $yCab !== null && $cab != $yCab) continue;
+
+                $diff = abs($ord - $yOrd);
+                if ($diff < $bestDiff) {
+                    $bestDiff = $diff;
+                    $bestIdx = $i;
+                    $bestOrd = $yOrd;
+                }
+            }
+
+            // 判斷插前或後
+            if ($bestOrd !== null && $ord < $bestOrd) {
+                array_splice($output, $bestIdx, 0, [[ $book, null ]]);
+            } else {
+                array_splice($output, $bestIdx + 1, 0, [[ $book, null ]]);
+            }
+        }
+
+        return $output;
+    }
+
+
+
+
+
+
+
+
+
+
+    //{floor}/{floormap}/{caseno}
+    public function end2($timesname,$floor,$floormap,$caseno,$gotopid,Content $content){
+        $filter_times = explode(',', $timesname);
+        $filter_timesID = InventoryTime::whereIn('inventory_time', $filter_times)->pluck('id')->toArray();
+        dd($filter_timesID);
+        // 取得書櫃範圍
 
         // 使用 Floor 模型進行查詢
         $startnum=""; $endnum="";
@@ -308,6 +698,15 @@ class InventoryController extends Controller{
         $mybooks_ishere_1_2 = array_values($mybooks_ishere_1_2);
 
 
+        if (!empty($mybooks_ishere_0)) {
+            $finalArray = array_shift($mybooks_ishere_0);
+            if (!is_array($finalArray)) $finalArray = [];
+            foreach ($mybooks_ishere_0 as $subArray) {
+                if (isset($subArray[0])) $finalArray[] = $subArray[0];
+            }
+            $mybooks_ishere_0 = $finalArray;
+        }
+        
         // 保留索引為0的子數組，其他索引的內容合併為一個數組
         $finalArray = array_shift($mybooks_ishere_0);
         foreach ($mybooks_ishere_0 as $subArray) {
@@ -461,8 +860,6 @@ class InventoryController extends Controller{
             'bookcaseimg'=>$bookcaseimg
         ];
         return view("admin.inventory.end",$data);
-
-
     }
 
 
