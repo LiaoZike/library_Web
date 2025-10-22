@@ -31,7 +31,8 @@
 </head>
 <style>
 </style>
-<body class="hold-transition login-page" @if(config('admin.web_icon'))style="background: url({{config('admin.web_icon')}}) ;"@endif>
+<!-- <body class="hold-transition login-page" @if(config('admin.web_icon'))style="background: url({{config('admin.web_icon')}}) ;"@endif> -->
+<body class="hold-transition login-page" @if(config('admin.web_icon')) style="background: url('{{ url(config('admin.web_icon')) }}') no-repeat center center fixed; background-size: cover;" @endif>
 <div class="login-box cool-border">
     <div class="login-logo" style="margin-bottom: 0px;">
         <a href="{{ admin_url('/') }}" style="font-size: 19px;">{{config('admin.name')}}</a>
@@ -114,13 +115,16 @@
         color:white;
     }
     .login-box{
-        animation: rgbCycle 5s linear infinite;
+        /* animation: rgbCycle 5s linear infinite; */
+        box-shadow: 0 0  3px 3px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 1)
     }
     .cool-border{
         border: 1px solid black;
         border-radius: 3px;
         overflow: auto;
-        box-shadow:  0px 0px 3px 2px #c605ff;
+        /* box-shadow:  0px 0px 3px 2px #c605ff; */
+        box-shadow: 0 0  3px 3px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 255, 1)
+
     }
     button{
         background-color: rgba(0, 0, 0, 0.91);
@@ -138,6 +142,20 @@
     }
     .form-group:nth-child(2) input{
         margin-bottom: 20px;
+    }
+    body.hold-transition.login-page {
+        position: relative;
+        background: url('{{ url(config('admin.web_icon')) }}') no-repeat center center fixed;
+        background-size: cover;
+        overflow: hidden;
+    }
+
+    body.hold-transition.login-page::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-color: rgba(10, 10, 10, 0.90); /* 0.5 代表黑色透明度，越大越暗 */
+        z-index: -1;
     }
 </style>
 </body>
