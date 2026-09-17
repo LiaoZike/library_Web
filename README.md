@@ -65,23 +65,26 @@ Controller 會依 `bookcaseID` 查詢 `virtual_library` 中對應書櫃的書籍
 
 ```mermaid
 flowchart LR
-    A[無人機 / 相機<br/>取得書櫃影像] --> B[外部影像辨識程式]
-    B -->|GET /API/{bookcaseID}| C[Library Web API]
-    C --> D[(virtual_library)]
+    A["無人機 / 相機<br/>取得書櫃影像"] --> B["外部影像辨識程式"]
+
+    B -->|"GET /API/{bookcaseID}"| C["Library Web API"]
+    C --> D[("virtual_library")]
     D --> C
     C --> B
 
-    B -->|盤點與辨識結果| E[(MySQL Database)]
+    B -->|"盤點與辨識結果"| E[("MySQL Database")]
 
-    F[Laravel Web / Laravel-Admin] <--> E
-    F --> G[盤點批次]
-    G --> H[樓層]
-    H --> I[平面圖]
-    I --> J[書櫃]
-    J --> K[書籍盤點結果 / 影像 / 異常狀態]
+    F["Laravel Web / Laravel-Admin"] --> E
+    E --> F
 
-    F --> L[Library Map Editor]
-    L --> M[樓層 / 書櫃配置]
+    F --> G["盤點批次"]
+    G --> H["樓層"]
+    H --> I["平面圖"]
+    I --> J["書櫃"]
+    J --> K["書籍盤點結果 / 影像 / 異常狀態"]
+
+    F --> L["Library Map Editor"]
+    L --> M["樓層 / 書櫃配置"]
 ```
 
 整體概念可簡化為：
